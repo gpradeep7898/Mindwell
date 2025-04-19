@@ -7,7 +7,7 @@ import {
     Navigate,
     // useLocation // Keep commented unless implementing page transitions
 } from "react-router-dom";
-import { LoadScript } from "@react-google-maps/api";
+//import { LoadScript } from "@react-google-maps/api";
 import { useAuthState } from "react-firebase-hooks/auth";
 // import { AnimatePresence } from "framer-motion"; // Keep commented unless implementing
 
@@ -77,6 +77,12 @@ function App() {
         // Maybe render a generic error page or try to redirect to Auth
         // This might be redundant if ProtectedRoute handles it, but good for initial load check
         return (
+            <LoadScript
+            googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || ""}
+            libraries={googleMapsLibraries} // <-- Use the const variable here
+            loadingElement={<GlobalLoader message="Loading map services..." />}
+            onError={(error) => console.error("Google Maps LoadScript Error:", error)}
+        >
             <Router>
                 <div className="app-container">
                     <main className="content-container">
@@ -86,6 +92,7 @@ function App() {
                     </main>
                 </div>
             </Router>
+            </LoadScript>
         )
     }
 
