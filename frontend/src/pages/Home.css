@@ -1,116 +1,249 @@
-/* General Styling */
-.home-container {
-    font-family: "Arial", sans-serif;
-    text-align: center;
-    color: #333;
-  }
-  
-  /* Hero Section */
-  .hero {
-    background: linear-gradient(to right, #6a11cb, #2575fc);
-    color: white;
-    padding: 100px 20px;
-  }
-  
-  .hero-content h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-  }
-  
-  .hero-content p {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-  }
-  
-  .btn-primary {
-    background-color: #ff5733;
-    color: white;
-    padding: 10px 20px;
-    text-decoration: none;
-    border-radius: 5px;
-    transition: 0.3s;
-  }
-  
-  .btn-primary:hover {
-    background-color: #e84310;
-  }
-  
-  /* Services Section */
-  .services {
-    margin: 50px 0;
-  }
-  
-  .services h2 {
-    font-size: 2rem;
-  }
-  
-  .service-cards {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-top: 20px;
-  }
-  
-  .card {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.1);
-    width: 250px;
-  }
-  
-  .card h3 {
-    font-size: 1.5rem;
-  }
-  
-  .card p {
-    font-size: 1rem;
-  }
-  
-  .btn-secondary {
-    display: inline-block;
-    margin-top: 10px;
-    padding: 8px 15px;
-    background-color: #2575fc;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-  }
-  
-  .btn-secondary:hover {
-    background-color: #1a5cc8;
-  }
-  
-  /* Testimonials Section */
-  .testimonials {
-    background: #f5f5f5;
-    padding: 50px 20px;
-  }
-  
-  .testimonial {
-    max-width: 600px;
-    margin: 20px auto;
-    font-style: italic;
-  }
-  
-  .testimonial h4 {
-    margin-top: 10px;
-  }
-  
-  /* Call to Action */
-  .cta {
-    padding: 50px 20px;
-    background: linear-gradient(to right, #ff5733, #ff914d);
-    color: white;
-  }
-  
-  .cta h2 {
-    font-size: 2rem;
-  }
-  
-  .cta p {
-    font-size: 1.2rem;
-    margin-bottom: 20px;
-  }
-  
-  
+/* frontend/src/pages/Home.css */
+
+/* Variables (Define or replace) */
+:root {
+  --color-primary: #A0D2DB; /* Aura blue */
+  --color-primary-dark: #78aeb5;
+  --color-secondary: #E6E6FA; /* Lavender */
+  --color-text: #555;
+  --color-text-dark: #333;
+  --color-text-light: #f8f9fa; /* For hero/dark sections */
+  --color-background-main: #ffffff;
+  --color-background-alt: #f8f9fa; /* Light grey */
+  --color-background-dark: #2c3e50; /* Example dark section bg */
+  --border-radius: 8px;
+  --section-padding: 4rem 2rem; /* Default padding for sections */
+  --section-padding-mobile: 2.5rem 1.5rem;
+}
+
+/* General Container */
+.container {
+  width: 100%;
+  max-width: 1140px; /* Standard max width */
+  margin: 0 auto; /* Center container */
+  padding: 0 15px; /* Horizontal padding */
+  box-sizing: border-box;
+}
+
+/* Remove default margin */
+body, h1, h2, h3, h4, p {
+  margin: 0;
+}
+
+.home-outer-container {
+  /* No specific styles needed, sections handle background */
+}
+
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(to right, var(--color-gradient-start, #a0d2db), var(--color-gradient-end, #78aeb5));
+  background-size: cover;
+  background-position: center center;
+  color: var(--color-text-light);
+  padding: 6rem 2rem; /* More padding for hero */
+  text-align: center;
+  min-height: 60vh; /* Ensure decent height */
+  display: flex;
+  align-items: center; /* Vertically center content */
+  justify-content: center;
+}
+/* Fallback background color if image doesn't load */
+.hero-section:not(:has(>img)) { /* Simple check */
+  background-color: var(--color-background-dark);
+}
+
+
+.hero-content h1 {
+  font-size: 2.8rem; /* Large hero heading */
+  font-weight: 600;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.hero-content .subtitle {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+  max-width: 600px; /* Limit subtitle width */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-button {
+  /* Uses .aura-button .primary .large */
+  padding: 0.9rem 2rem; /* Larger padding */
+  font-size: 1.1rem;
+}
+
+
+/* Section Base Styles */
+.services-section, .testimonials-section, .cta-section {
+  padding: var(--section-padding);
+}
+
+.section-title {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  margin-bottom: 2.5rem;
+}
+
+/* Services Section */
+.services-section {
+  background-color: var(--color-background-alt); /* Light grey background */
+}
+
+.service-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid */
+  gap: 1.8rem;
+}
+
+.service-card {
+  /* Inherits .aura-card */
+  background-color: #ffffff;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.service-card:hover {
+   transform: translateY(-5px);
+   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card-icon {
+  font-size: 2.5rem; /* Icon size */
+  color: var(--color-primary); /* Theme color for icon */
+  margin-bottom: 1rem;
+  background-color: rgba(160, 210, 219, 0.1); /* Faint background circle */
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.service-card h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  margin-bottom: 0.5rem;
+}
+
+.service-card p {
+  font-size: 0.95rem;
+  color: var(--color-text);
+  margin-bottom: 1.5rem;
+  flex-grow: 1; /* Push button down */
+}
+
+.service-card .aura-button.secondary {
+  margin-top: auto; /* Align button to bottom */
+}
+
+
+/* Testimonials Section */
+.testimonials-section {
+  background-color: var(--color-background-main);
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.8rem;
+}
+
+.testimonial-card {
+  background-color: var(--color-background-alt);
+  padding: 1.8rem;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--card-border-color);
+  position: relative;
+  padding-top: 2.5rem; /* Space for quote icon */
+}
+.testimonial-card::before { /* Quote icon */
+   content: '“';
+   font-family: Georgia, serif;
+   font-size: 4rem;
+   color: var(--color-primary);
+   opacity: 0.3;
+   position: absolute;
+   top: 0.5rem;
+   left: 1rem;
+   line-height: 1;
+}
+
+
+.testimonial-quote {
+  font-size: 1rem;
+  font-style: italic;
+  color: var(--color-text);
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.testimonial-author {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  text-align: right;
+}
+
+
+/* Call to Action Section */
+.cta-section {
+  background-color: var(--color-background-dark); /* Dark background */
+  color: var(--color-text-light);
+  text-align: center;
+}
+
+.cta-content h2 {
+  font-size: 2.2rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.cta-content .subtitle {
+   font-size: 1.1rem;
+   margin-bottom: 2rem;
+   opacity: 0.9;
+   max-width: 550px;
+   margin-left: auto;
+   margin-right: auto;
+}
+.cta-button {
+  /* Uses .aura-button .primary .large */
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-dark); /* Dark text on light primary button */
+}
+.cta-button:hover {
+   background-color: var(--color-primary-dark);
+   border-color: var(--color-primary-dark);
+   color: var(--color-text-light);
+}
+
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+   .hero-content h1 { font-size: 2.4rem; }
+   .hero-content .subtitle { font-size: 1.1rem; }
+   .section-title { font-size: 1.8rem; }
+   .cta-content h2 { font-size: 2rem; }
+}
+
+@media (max-width: 768px) {
+    .services-section, .testimonials-section, .cta-section {
+        padding: var(--section-padding-mobile);
+    }
+    .hero-content h1 { font-size: 2rem; }
+    .hero-content .subtitle { font-size: 1rem; }
+    .service-cards-grid, .testimonials-grid { gap: 1.2rem; }
+    .cta-content h2 { font-size: 1.8rem; }
+    .cta-content .subtitle { font-size: 1rem; }
+}

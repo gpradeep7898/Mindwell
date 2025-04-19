@@ -1,0 +1,211 @@
+/* frontend/src/pages/WellnessStore.css */
+
+/* Variables (Define or replace) */
+:root {
+    --page-padding: 2rem 3rem;
+    --page-padding-mobile: 1.5rem;
+    --card-bg-color: #ffffff;
+    --card-border-color: #e0e4f0;
+    --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --card-shadow-hover: 0 6px 15px rgba(0, 0, 0, 0.08);
+    --color-primary: #A0D2DB;
+    --color-primary-dark: #78aeb5;
+    --color-secondary: #e9ecef; /* Button background */
+    --color-secondary-dark: #ced4da;
+    --color-accent-1: #FFB6A7; /* Example Store Icon Color */
+    --color-text: #555;
+    --color-text-dark: #333;
+    --color-text-light: #7a7e9a;
+    --border-radius: 8px;
+  }
+  
+  .wellness-store-container {
+      padding: var(--page-padding);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100%;
+      box-sizing: border-box;
+  }
+  
+  .store-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+      max-width: 600px;
+  }
+  
+  .store-header .header-icon {
+      font-size: 2.5rem;
+      color: var(--color-accent-1);
+      margin-bottom: 0.5rem;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+  }
+  
+  .store-header .page-title {
+    color: var(--color-text-dark);
+    margin-bottom: 0.3rem;
+  }
+  .store-header .page-subtitle {
+    color: var(--color-text);
+    font-size: 1rem;
+  }
+  
+  
+  /* Grid for products */
+  .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Adjust min width */
+      gap: 1.8rem;
+      width: 100%;
+      max-width: 1200px; /* Adjust max overall width */
+      margin-bottom: 2.5rem;
+  }
+  
+  /* Individual product card styling */
+  .product-card {
+      /* Inherits from .aura-card */
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background-color: var(--card-bg-color);
+      border: 1px solid var(--card-border-color);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  }
+  
+  .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--card-shadow-hover);
+  }
+  
+  
+  /* Image Styling */
+  .product-image-container {
+      width: 100%;
+      aspect-ratio: 16 / 11; /* Adjust aspect ratio */
+      background-color: #f8f9fa; /* Lighter background */
+      overflow: hidden;
+      position: relative; /* For potential overlays */
+  }
+  
+  .product-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease; /* Slower zoom */
+  }
+  
+  .product-card:hover .product-image {
+      transform: scale(1.06);
+  }
+  
+  
+  /* Details section styling */
+  .product-details {
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1; /* Fill remaining card space */
+  }
+  
+  .product-name {
+      font-size: 1.1rem; /* Slightly smaller name */
+      color: var(--color-text-dark);
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      line-height: 1.3;
+  }
+  
+  .product-description {
+      font-size: 0.9rem;
+      color: var(--color-text);
+      line-height: 1.5;
+      margin-bottom: 1rem;
+      flex-grow: 1; /* Push meta/price/button down */
+  }
+  
+  /* Meta info (Benefit, Type) */
+  .product-meta {
+      font-size: 0.8rem;
+      color: var(--color-text-light);
+      margin-bottom: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+  }
+  
+  .product-meta strong {
+      color: var(--color-text);
+      font-weight: 600;
+  }
+  
+  /* Price styling */
+  .product-price {
+      font-size: 1.15rem; /* Price size */
+      font-weight: 600;
+      color: var(--color-primary-dark);
+      margin-bottom: 1.2rem;
+      margin-top: auto; /* Separate from description */
+  }
+  
+  /* Button/Link styling */
+  .view-product-button {
+      /* Inherits from .aura-button .secondary .small */
+      align-self: flex-start; /* Align to start */
+      padding: 0.6rem 1.3rem;
+      font-size: 0.9rem;
+      /* Ensure background/color defined if needed */
+       background-color: var(--color-secondary);
+       color: var(--color-primary-dark);
+       border: 1px solid var(--color-primary);
+  }
+  .view-product-button:hover:not(.disabled-link) {
+      background-color: var(--color-secondary-dark);
+       color: var(--color-text-dark);
+  }
+  
+  /* Disabled link style */
+  .view-product-button.disabled-link {
+      opacity: 0.6;
+      cursor: not-allowed;
+      pointer-events: none;
+      background-color: #e9ecef;
+      border-color: #ced4da;
+      color: #6c757d;
+  }
+  
+  /* Disclaimer text styling */
+  .disclaimer-text {
+      font-size: 0.85rem;
+      color: var(--color-text-light);
+      text-align: center;
+      max-width: 700px;
+      line-height: 1.5;
+      margin-top: 2rem;
+  }
+  
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+      .product-grid {
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 1.5rem;
+      }
+       .wellness-store-container {
+          padding: var(--page-padding-mobile);
+      }
+       .product-details {
+          padding: 1rem 1.2rem;
+      }
+  }
+  
+  @media (max-width: 480px) {
+       .product-grid {
+          grid-template-columns: 1fr; /* Single column */
+          gap: 1.2rem;
+      }
+  }

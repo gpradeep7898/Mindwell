@@ -1,55 +1,80 @@
-.container {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-  }
-  h1 {
-    color: #583a7a;
-  }
-  .logout-btn {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    padding: 4px 8px;
-    font-size: 12px;
-    background: red;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
-    z-index: 1000; /* Ensures button stays above other elements */
-    width: auto; /* Prevents full width */
-    display: inline-block;
-}
+/* frontend/src/App.css */
 
-.logout-btn:hover {
-    background: darkred;
-    transform: scale(1.05);
-}
+/* ... (Import fonts, :root variables, body styles, etc. from index.css if not defined there) ... */
+
 .app-container {
-  display: flex;
-  height: 100vh;
+  display: flex; /* Use flexbox for layout */
 }
 
+/* Sidebar Styles are mostly in Sidebar.css */
+
+/* Main Content Container */
 .content-container {
-  flex-grow: 1;
-  padding: 20px;
-  overflow-y: auto;
+  flex-grow: 1; /* Allow content to take remaining width */
+  min-height: 100vh; /* Ensure it spans viewport height */
+  background-color: var(--color-background-main, #f8f9fa); /* Main background */
+  transition: margin-left 0.3s ease-in-out; /* Smooth transition when sidebar appears/disappears */
+  margin-left: 0; /* Default: No margin when sidebar is hidden (or not present) */
+  box-sizing: border-box;
 }
 
-.logout-btn {
-  position: fixed;
-  top: 10px;
-  right: 20px;
-  padding: 10px 15px;
-  background-color: red;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+/* ---vvv--- THIS IS THE KEY PART ---vvv--- */
+/* When sidebar IS visible (user logged in), add left margin to content */
+.content-container.content-shifted {
+  margin-left: var(--sidebar-width, 260px); /* Push content over by sidebar width */
+}
+/* ---^^^--- END KEY PART ---^^^--- */
+
+
+/* General Page Header Styling (can be used across pages) */
+.page-header {
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color, #e0e4f0);
+  /* Example text alignment */
+   text-align: center; /* Or left align if preferred */
+}
+.page-header .header-icon {
+  font-size: 2.2rem;
+  display: block; /* Or inline-block */
+  margin-bottom: 0.5rem;
+  color: var(--color-primary-dark, #78aeb5);
+   margin-left: auto; /* For centering if text-align center */
+   margin-right: auto; /* For centering */
+}
+.page-header .page-title {
+  font-size: 1.8rem; /* Adjust size */
+  color: var(--color-text-dark, #333);
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+.page-header .page-subtitle {
+  font-size: 1rem;
+  color: var(--color-text, #555);
+  max-width: 600px; /* Limit width */
+   margin-left: auto; /* For centering if text-align center */
+   margin-right: auto; /* For centering */
 }
 
-.logout-btn:hover {
-  background-color: darkred;
+/* General Card Styling (can be used across pages) */
+.aura-card {
+  background-color: var(--color-white, #fff);
+  border-radius: var(--border-radius, 8px);
+  box-shadow: var(--card-shadow, 0 3px 10px rgba(0, 0, 0, 0.07));
+  border: 1px solid var(--border-color, #e0e4f0);
+  padding: 1.5rem; /* Default padding */
+}
+
+
+/* Responsive Adjustments for Layout */
+@media (max-width: 768px) {
+  /* On smaller screens, maybe hide sidebar or use a toggle? */
+  /* For now, let's assume sidebar is always shown */
+  /* Adjust content margin if sidebar width changes */
+   .content-container.content-shifted {
+      /* If sidebar width reduces on mobile, adjust this: */
+      /* margin-left: var(--sidebar-width-mobile, 200px); */
+   }
+   .page-header .page-title { font-size: 1.6rem; }
+   .page-header .page-subtitle { font-size: 0.95rem; }
 }

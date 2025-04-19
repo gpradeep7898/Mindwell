@@ -1,0 +1,53 @@
+/* frontend/src/components/GlobalLoader.css */
+
+/* Variables (Define these in App.css/index.css or replace here) */
+:root {
+    --loader-overlay-bg: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+    --loader-spinner-color: var(--color-primary, #A0D2DB); /* Example: Use primary theme color */
+    --loader-text-color: var(--color-text-dark, #333);
+  }
+  
+  .global-loader-overlay {
+    position: fixed; /* Cover the entire viewport */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--loader-overlay-bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999; /* Ensure it's on top of everything */
+    backdrop-filter: blur(3px); /* Optional: Add background blur */
+    -webkit-backdrop-filter: blur(3px); /* Safari */
+  }
+  
+  /* Basic CSS Spinner */
+  .loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(0, 0, 0, 0.1); /* Light grey track */
+    border-top-color: var(--loader-spinner-color); /* Spinner color */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* You can share spinner styles using a common class like 'aura-spinner' */
+  .aura-spinner {
+     /* Shared spinner styles can go here if you want consistency */
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .loader-message {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--loader-text-color);
+    text-align: center;
+  }

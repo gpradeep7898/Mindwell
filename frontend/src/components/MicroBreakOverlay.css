@@ -1,0 +1,102 @@
+/* frontend/src/components/MicroBreakOverlay.css */
+
+/* Variables (Define these in App.css/index.css or replace here) */
+:root {
+    --overlay-bg-color: rgba(30, 45, 65, 0.92); /* Darker, calming semi-transparent */
+    --overlay-text-color: #f0f8ff; /* AliceBlue - soft white/blue */
+    --overlay-close-btn-color: #a0b4c8;
+    --overlay-close-btn-hover-color: #ffffff;
+  }
+  
+  .micro-break-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--overlay-bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000; /* Highest z-index */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 2rem; /* Add padding for text spacing */
+    box-sizing: border-box;
+    text-align: center;
+    /* Base styles */
+  }
+  
+  /* Specific styles if QuickRelief needs distinction */
+  .quick-relief-overlay {
+     /* background-color: rgba(10, 20, 40, 0.95); */ /* Example: Even darker */
+  }
+  
+  .micro-break-text {
+    font-size: 1.8rem; /* Make text prominent */
+    font-weight: 400;
+    color: var(--overlay-text-color);
+    max-width: 80%; /* Prevent text from spanning entire width */
+    line-height: 1.6;
+    /* Base styles */
+  }
+  
+  /* Specific styles if QuickRelief needs distinction */
+  .quick-relief-text {
+     /* font-size: 2rem; */ /* Example: Larger for focus */
+     /* font-weight: 300; */ /* Example: Lighter weight */
+  }
+  
+  
+  /* Close button styling */
+  .micro-break-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    background: none;
+    border: none;
+    font-size: 2.5rem; /* Large, easy-to-click target */
+    color: var(--overlay-close-btn-color);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0.5rem;
+    transition: color 0.2s ease;
+    font-weight: 300;
+  }
+  
+  .micro-break-close-btn:hover {
+    color: var(--overlay-close-btn-hover-color);
+  }
+  
+  
+  /* Responsive font size for overlay text */
+  @media (max-width: 768px) {
+    .micro-break-text {
+      font-size: 1.5rem;
+      max-width: 90%;
+    }
+    .quick-relief-text {
+       /* Adjust if needed */
+       /* font-size: 1.7rem; */
+    }
+    .micro-break-close-btn {
+      font-size: 2.2rem;
+      top: 15px;
+      right: 20px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .micro-break-text {
+      font-size: 1.3rem;
+    }
+     .quick-relief-text {
+       /* Adjust if needed */
+       /* font-size: 1.5rem; */
+    }
+    .micro-break-close-btn {
+      font-size: 2rem;
+      top: 10px;
+      right: 15px;
+    }
+  }

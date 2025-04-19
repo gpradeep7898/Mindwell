@@ -1,224 +1,138 @@
+// backend/server.js
 const express = require("express");
 const cors = require("cors");
 const admin = require("firebase-admin");
 const path = require("path");
-require("dotenv").config();
+require("dotenv").config(); // Load environment variables early
 
-// Define Firebase Service Account Path
-const serviceAccountPath = path.join(__dirname, "firebaseServiceAccount.json");
+const helmet = require("helmet"); // Sets various security HTTP headers
+const rateLimit = require("express-rate-limit"); // Basic rate limiting
 
-// Load Firebase Service Account
-let serviceAccount;
+// ---vvv--- Step 1: Import ALL route handlers ---vvv---
+const letterRoutes = require("./routes/anonymousLetters");
+const facilityRoutes = require("./routes/facilities");
+const chatbotRoutes = require("./routes/chatbot"); // Import chatbot routes
+// ---^^^--- End Route Imports ---^^^---
+
+// --- Initialize Express App ---
+const app = express();
+
+// --- Security Enhancements ---
+app.use(helmet()); // Apply helmet security headers
+
+// --- CORS Configuration ---
+const allowedOrigins = process.env.NODE_ENV === 'production'
+    ? [process.env.FRONTEND_URL_PROD] // Make sure this is set in production .env
+    // Add ALL ports your frontend might run on, AND the backend's own port for dev flexibility
+    : ["http://localhost:3000", "http://localhost:8082", "http://localhost:3003", "http://localhost:8081"];
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests) or from allowed list
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            console.warn(`CORS blocked request from origin: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: "GET, POST, DELETE, PUT, OPTIONS",
+    allowedHeaders: "Content-Type, Authorization",
+    credentials: true // Keep if frontend might need cookies later, otherwise optional
+};
+
+app.use(cors(corsOptions));
+// Handle CORS preflight requests (OPTIONS method) globally
+app.options('*', cors(corsOptions));
+
+// --- Rate Limiting ---
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 150, // Limit each IP to 150 requests per windowMs
+    message: { error: "Too many requests from this IP, please try again after 15 minutes" },
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+app.use('/api/', apiLimiter); // Apply rate limiting to all /api/ routes
+
+// --- Body Parsers ---
+app.use(express.json({ limit: '20kb' })); // Limit payload size
+app.use(express.urlencoded({ extended: true, limit: '20kb' }));
+
+// --- Request Logging Middleware ---
+app.use((req, res, next) => {
+    const startTime = Date.now();
+    res.on('finish', () => {
+        const duration = Date.now() - startTime;
+        console.log(`REQ: ${req.method} ${req.originalUrl} - ${res.statusCode} [${duration}ms]`);
+    });
+    next();
+});
+
+// --- Firebase Admin Initialization ---
 try {
-  serviceAccount = require(serviceAccountPath);
+    const serviceAccountPath = path.join(__dirname, "firebaseServiceAccount.json");
+    // Ensure the file exists before requiring
+    if (!require('fs').existsSync(serviceAccountPath)) {
+        throw new Error(`firebaseServiceAccount.json not found at ${serviceAccountPath}`);
+    }
+    const serviceAccount = require(serviceAccountPath);
+
+    admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        // databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com" // Optional
+    });
+    console.log("✅ Firebase Admin SDK Initialized Successfully.");
+
 } catch (error) {
-  console.error("❌ Error loading Firebase service account:", error.message);
-  process.exit(1);
+    console.error("❌ CRITICAL ERROR: Failed to initialize Firebase Admin SDK:");
+    console.error(error.message);
+    console.error("Ensure 'firebaseServiceAccount.json' exists, is valid JSON, and accessible.");
+    process.exit(1); // Exit if Firebase Admin fails
 }
 
-// Initialize Firebase Admin SDK
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+// ---vvv--- Step 2: Mount ALL API Routes ---vvv---
+// These MUST come before the 404 handler
+app.use("/api/anonymous-letters", letterRoutes);
+app.use("/api/facilities", facilityRoutes);
+app.use("/api/chatbot", chatbotRoutes); // Mount chatbot routes
+// ---^^^--- End API Routes ---^^^---
 
-const db = admin.firestore();
-const app = express();
-app.use(cors());
-app.use(express.json());
-
-// ✅ Emotion Mapping
-const emotionKeywords = {
-  sad: ["sad", "depressed", "lonely", "down", "unhappy"],
-  anxious: ["anxious", "nervous", "stressed", "worried", "overwhelmed"],
-  afraid: ["afraid", "scared", "terrified", "fearful"],
-  disappointed: ["disappointed", "let down", "discouraged"],
-  devastated: ["devastated", "heartbroken", "shattered"],
-  embarrassed: ["embarrassed", "ashamed", "awkward"],
-  ashamed: ["ashamed", "guilty", "regretful"],
-  apprehensive: ["apprehensive", "uncertain", "hesitant"],
-  angry: ["angry", "frustrated", "mad", "furious"],
-  joyful: ["happy", "joyful", "excited", "thrilled", "ecstatic"],
-  hopeful: ["hopeful", "optimistic", "positive"],
-  content: ["content", "satisfied", "at peace"],
-  impressed: ["impressed", "amazed", "astonished"],
-  nostalgic: ["nostalgic", "missing", "memories"],
-  grateful: ["grateful", "thankful", "appreciative"],
-  proud: ["proud", "accomplished", "fulfilled"],
-  prepared: ["prepared", "ready", "confident"],
-  trusting: ["trusting", "reliable", "secure"],
-  caring: ["caring", "kind", "compassionate"],
-  furious: ["furious", "rage", "outraged"],
-  disgusted: ["disgusted", "grossed out", "repulsed"],
-  surprised: ["surprised", "shocked", "amazed"],
-  faithful: ["faithful", "loyal", "devoted"],
-  sentimental: ["sentimental", "emotional", "heartfelt"],
-};
-
-// ✅ Emotion-Based Responses
-const responses = {
-  sad: "I'm really sorry you're feeling this way. You're not alone, and things will get better. 💙",
-  anxious: "I understand this can be stressful. Try taking deep breaths and focusing on one step at a time. 🌿",
-  afraid: "It's okay to feel fear, but remember that you're stronger than you think. I'm here for you. 🛡️",
-  disappointed: "It's okay to feel this way. You are strong, and better days are ahead. ✨",
-  devastated: "That sounds really tough. I'm here for you, and you are not alone. 💕",
-  embarrassed: "It’s okay, everyone has embarrassing moments. Don’t be too hard on yourself! 😊",
-  ashamed: "We all make mistakes, but they don’t define you. You’re still worthy and amazing. 💪",
-  apprehensive: "Feeling unsure is normal. Believe in yourself, and take things one step at a time. 🌟",
-  angry: "I hear your frustration. Sometimes venting helps—want to talk more about it? 🗣️",
-  joyful: "That’s fantastic! I'm so happy for you! Keep enjoying the moment. 😊",
-  hopeful: "Hope keeps us going! Stay positive and believe in yourself. 🌟",
-  content: "It’s wonderful to feel at peace. Cherish these moments. 🌿",
-  impressed: "Wow, that’s amazing! It sounds like a great experience. 😃",
-  nostalgic: "Memories can be powerful. It’s nice to reminisce about the good times. 💭",
-  grateful: "It’s wonderful to appreciate the good things in life. Gratitude makes everything better! 🙏",
-  proud: "That’s a great achievement! You should be proud of yourself. 👏",
-  prepared: "You got this! Being prepared is the first step to success. 💪",
-  trusting: "Trust is so important. It’s great that you have faith in something. 🤝",
-  caring: "The world needs more kindness. Keep being the caring person you are. 💖",
-  furious: "Anger can be overwhelming, but I’m here if you need to talk. 😠",
-  disgusted: "That sounds unpleasant. Do you want to talk about it? 🤢",
-  surprised: "That’s unexpected! How do you feel about it? 😲",
-  faithful: "Faith is powerful. Keep believing in what gives you strength. 🙏",
-  sentimental: "That sounds like a heartfelt moment. Thanks for sharing. ❤️",
-  neutral: "I'm here to chat. Tell me more about what's on your mind! 😊",
-};
-
-// ✅ Chatbot API Route
-app.post("/api/chatbot", async (req, res) => {
-  try {
-    const { message } = req.body;
-    if (!message) {
-      return res.status(400).json({ error: "Message is required" });
-    }
-
-    // Detect Emotion
-    let detectedEmotion = "neutral"; // Default emotion
-    for (const [emotion, keywords] of Object.entries(emotionKeywords)) {
-      if (keywords.some((word) => message.toLowerCase().includes(word))) {
-        detectedEmotion = emotion;
-        break;
-      }
-    }
-
-    // Get Response Based on Emotion
-    const botReply = responses[detectedEmotion];
-
-    res.json({
-      reply: botReply,
-      emotion: detectedEmotion,
-    });
-  } catch (error) {
-    res.status(500).json({ error: "Something went wrong", details: error.message });
-  }
-});
-
-// ✅ API to Submit Anonymous Letter
-// ✅ API to Submit an Anonymous Letter
-app.post("/api/anonymous-letters", async (req, res) => {
-    try {
-      const { content } = req.body;
-      if (!content) {
-        return res.status(400).json({ error: "Letter content is required" });
-      }
-  
-      const newLetterRef = await db.collection("anonymousLetters").add({
-        content,
-        likes: 0, // Initialize likes
-        replies: [], // Store replies as an array
-        timestamp: admin.firestore.Timestamp.now(),
-      });
-  
-      res.status(201).json({ message: "Letter submitted successfully!", id: newLetterRef.id });
-    } catch (error) {
-      res.status(500).json({ error: "Something went wrong", details: error.message });
-    }
-  });
-  
-  // ✅ API to Fetch Anonymous Letters (With Replies)
-  app.get("/api/anonymous-letters", async (req, res) => {
-    try {
-      let { sort, page, limit } = req.query;
-      page = parseInt(page) || 1;
-      limit = parseInt(limit) || 10;
-  
-      let query = db.collection("anonymousLetters");
-  
-      // Sorting (By likes or latest)
-      if (sort === "popular") {
-        query = query.orderBy("likes", "desc");
-      } else {
-        query = query.orderBy("timestamp", "desc");
-      }
-  
-      const snapshot = await query.limit(limit).offset((page - 1) * limit).get();
-      const letters = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  
-      res.status(200).json(letters);
-    } catch (error) {
-      res.status(500).json({ error: "Something went wrong", details: error.message });
-    }
-  });
-  
-  // ✅ API to Like/Upvote an Anonymous Letter
-  app.post("/api/anonymous-letters/:id/like", async (req, res) => {
-    try {
-      const letterId = req.params.id;
-      const letterRef = db.collection("anonymousLetters").doc(letterId);
-      const letterDoc = await letterRef.get();
-  
-      if (!letterDoc.exists) {
-        return res.status(404).json({ error: "Letter not found" });
-      }
-  
-      const currentLikes = letterDoc.data().likes || 0;
-      await letterRef.update({ likes: currentLikes + 1 });
-  
-      res.status(200).json({ message: "Letter liked!", newLikes: currentLikes + 1 });
-    } catch (error) {
-      res.status(500).json({ error: "Something went wrong", details: error.message });
-    }
-  });
-  
-  // ✅ API to Add a Reply to an Anonymous Letter
-  app.post("/api/anonymous-letters/:id/reply", async (req, res) => {
-    const { content, username } = req.body;
-    const letterId = req.params.id;
-
-    if (!content || content.trim() === "") {  // ✅ Check for empty replies
-        return res.status(400).json({ error: "Reply content is required" });
-    }
-
-    try {
-        const letterRef = db.collection("anonymousLetters").doc(letterId);
-        const letterSnapshot = await letterRef.get();
-
-        if (!letterSnapshot.exists) {
-            return res.status(404).json({ error: "Letter not found" });
-        }
-
-        await letterRef.update({
-            replies: admin.firestore.FieldValue.arrayUnion({ 
-                content, 
-                username, 
-                timestamp: new Date() 
-            })
-        });
-
-        res.status(200).json({ message: "Reply added successfully!" });
-    } catch (error) {
-        console.error("Error adding reply:", error);
-        res.status(500).json({ error: "Server error" });
-    }
-});
-
-
-// ✅ Root Route
+// --- Simple Root Route ---
 app.get("/", (req, res) => {
-  res.send("Welcome to the Mental Health App Backend!");
+    res.status(200).json({ message: "Welcome to the MindWell API!" });
 });
 
-// Start the Server
-const PORT = process.env.PORT || 8080;
+// ---vvv--- Step 3: Centralized Error Handling (AFTER all valid routes) ---vvv---
+
+// 404 Not Found Handler
+app.use((req, res, next) => {
+    // This middleware runs only if no route above matched
+    res.status(404).json({ error: `Not Found: Cannot ${req.method} ${req.originalUrl}` });
+});
+
+// Global Error Handler (must have 4 arguments)
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+    console.error("💥 UNHANDLED ERROR:", err.stack || err); // Log the full error stack
+
+    // Use status code from the error if it exists, otherwise default to 500
+    const statusCode = typeof err.statusCode === 'number' ? err.statusCode : 500;
+    const message = err.message || "Internal Server Error";
+
+    res.status(statusCode).json({
+        error: message,
+        // Optionally add more error details in development
+        ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    });
+});
+// ---^^^--- End Error Handling ---^^^---
+
+
+// --- Start the Server ---
+const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`🚀 Server listening on port ${PORT}`);
+    console.log(`      Mode: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`      Allowed CORS origins: ${allowedOrigins.join(', ')}`);
 });

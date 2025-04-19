@@ -1,43 +1,182 @@
-.find-doctor-container {
-    max-width: 900px;
-    margin: 20px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    position: relative;
-    z-index: 10;
-}
+/* frontend/src/pages/FindDoctor.css */
 
-.map-container {
-    height: 400px;
-    width: 100%;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    background: #ddd;
-}
-
-.hospital-list {
-    list-style: none;
-    padding: 0;
-}
-
-.hospital-list li {
-    background: #f5f5f5;
-    padding: 10px;
-    margin: 8px 0;
-    border-radius: 5px;
-}
-
-.error-message {
-    color: red;
-    font-weight: bold;
-    margin-bottom: 15px;
-}
-
-@media (max-width: 768px) {
-  .find-doctor-container {
-    width: 95%;
-    padding: 15px;
+/* Variables (Define or replace) */
+:root {
+    --page-padding: 2rem 3rem;
+    --page-padding-mobile: 1.5rem;
+    --map-border-radius: 8px;
+    --map-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --color-primary: #A0D2DB;
+    --color-primary-dark: #78aeb5;
+    --color-text: #555;
+    --color-text-dark: #333;
+    --color-text-light: #7a7e9a;
+    --color-error: #e74c3c;
+    --popup-bg: #ffffff;
+    --popup-border: #ddd;
+    --popup-link-color: var(--color-primary-dark);
   }
-}
+  
+  .find-doctor-container {
+    padding: var(--page-padding);
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center header and map wrapper */
+  }
+  
+  /* Header */
+  .find-doctor-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    max-width: 700px; /* Limit header width */
+  }
+  .find-doctor-header .header-icon {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--color-primary-dark);
+  }
+  .find-doctor-header .page-title {
+    color: var(--color-text-dark);
+    margin-bottom: 0.3rem;
+  }
+  .find-doctor-header .page-subtitle {
+    color: var(--color-text);
+    font-size: 1rem;
+  }
+  
+  /* Error Message */
+  .error-message.page-error { /* Style map-specific errors */
+    width: 100%;
+    max-width: 800px; /* Match map width */
+    padding: 0.8rem 1.2rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    background-color: rgba(231, 76, 60, 0.1);
+    border: 1px solid rgba(231, 76, 60, 0.3);
+    color: #c0392b;
+    text-align: center;
+    box-sizing: border-box;
+  }
+  
+  
+  /* Map Wrapper */
+  .map-wrapper {
+    width: 100%;
+    max-width: 1000px; /* Max width for the map container */
+    position: relative; /* For loading overlay */
+    border-radius: var(--map-border-radius);
+    overflow: hidden; /* Ensure map corners are rounded */
+    box-shadow: var(--map-shadow);
+    margin-bottom: 1rem; /* Space below map */
+  }
+  
+  .leaflet-map-container {
+     /* Leaflet sets height/width via style prop */
+     border-radius: var(--map-border-radius); /* Ensure map itself is rounded */
+  }
+  
+  /* Loading Overlay for Map */
+  .loading-overlay.map-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    flex-direction: column; /* Stack spinner and text */
+    justify-content: center;
+    align-items: center;
+    z-index: 401; /* Above map tiles but below popups */
+    color: var(--color-text-dark);
+    font-weight: 500;
+  }
+  /* Re-use global spinner or define specific one */
+  .loading-overlay.map-loading span {
+    margin-top: 0.8rem;
+    font-size: 0.9rem;
+  }
+  /* Basic spinner if not using GlobalLoader */
+  /* .loading-overlay.map-loading::before {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } } */
+  
+  
+  /* Leaflet Popup Styling */
+  .leaflet-popup-content-wrapper {
+    border-radius: 6px !important; /* Override Leaflet default */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15) !important;
+  }
+  .leaflet-popup-content {
+    margin: 10px 15px !important; /* Adjust padding */
+    font-size: 0.9rem;
+    line-height: 1.5;
+    min-width: 180px; /* Prevent popups being too narrow */
+  }
+  .leaflet-popup-tip {
+    box-shadow: none !important; /* Remove default tip shadow if desired */
+  }
+  
+  .popup-content {
+    /* Container inside Leaflet's content div */
+  }
+  .popup-title {
+    font-weight: 600;
+    color: var(--color-text-dark);
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+  .popup-content.user-popup strong {
+     color: var(--color-primary-dark);
+  }
+  .popup-address, .popup-phone, .popup-website {
+    margin: 0.3rem 0;
+    color: var(--color-text);
+    font-size: 0.85rem;
+  }
+  .popup-phone a, .popup-website a {
+    color: var(--popup-link-color);
+    text-decoration: none;
+    word-break: break-all; /* Prevent long URLs overflowing */
+  }
+  .popup-phone a:hover, .popup-website a:hover {
+    text-decoration: underline;
+  }
+  .popup-facility-type {
+    display: inline-block;
+    background-color: #eee;
+    color: #555;
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    text-transform: capitalize;
+  }
+  
+  /* No Results Message */
+  .no-results-message {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: var(--color-text-light);
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .find-doctor-container {
+      padding: var(--page-padding-mobile);
+    }
+     .map-wrapper {
+        max-width: 100%; /* Allow map full width */
+     }
+  }

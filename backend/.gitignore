@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Environment Variables / Secrets
+.env
+firebaseServiceAccount.json
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Firebase Emulator Data (Optional)
+# *.emu*
+# firestore-debug.log
+# ui-debug.log
+# pubsub-debug.log
+# database-debug.log
+# storage-debug.log

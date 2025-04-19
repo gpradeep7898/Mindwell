@@ -1,47 +1,186 @@
-.sidebar {
-    width: 250px;
+/* frontend/src/components/Sidebar.css */
+
+/* Variables (Define these in App.css/index.css or replace here) */
+:root {
+    --sidebar-width: 260px;
+    --sidebar-bg-color: #2c3e50; /* Dark Blue/Grey */
+    /* ---vvv--- ADJUST TEXT/ICON COLORS FOR VISIBILITY ---vvv--- */
+    --sidebar-text-color: #e0eaf1; /* LIGHTER Grey/Off-white */
+    --sidebar-icon-color: #a0b4c8; /* MEDIUM Grey - visible on dark */
+    --sidebar-active-bg: #34495e; /* Slightly Lighter Dark Blue/Grey */
+    --sidebar-active-text: #ffffff; /* PURE White for active/hover */
+    --sidebar-hover-bg: #3a506b; /* Hover color */
+    /* ---^^^------------------------------------------^^^--- */
+    --sidebar-logo-color: #ffffff;
+    --sidebar-border-color: #4a627a;
+  
+    --color-error: #e74c3c;
+  }
+  
+  .sidebar-container {
+    width: var(--sidebar-width);
     height: 100vh;
-    background: linear-gradient(180deg, #6a11cb, #2575fc);
-    color: white;
+    background-color: var(--sidebar-bg-color);
+    color: var(--sidebar-text-color); /* Base color */
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding-top: 20px;
     position: fixed;
-    left: 0;
     top: 0;
-}
-
-.logo {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 30px;
-}
-
-.sidebar nav {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-
-.sidebar a {
-    text-decoration: none;
-    color:    white;
-    font-size: 18px;
-    padding: 15px 20px;
+    left: 0;
+    z-index: 1000;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  /* Hide scrollbar visually but allow scrolling */
+  .sidebar-container::-webkit-scrollbar {
+    width: 5px;
+  }
+  .sidebar-container::-webkit-scrollbar-thumb {
+    background: var(--sidebar-border-color);
+    border-radius: 3px;
+  }
+  .sidebar-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  
+  /* Logo Area */
+  .sidebar-logo-area {
+    padding: 1.5rem 1.5rem 1rem 1.5rem; /* Top, R/L, Bottom */
     display: flex;
     align-items: center;
-    transition: background 0.3s ease-in-out;
-}
-
-.sidebar a .icon {
-    margin-right: 10px;
-    font-size: 20px;
-}
-
-.sidebar a:hover, .sidebar a.active {
-    background: rgba(255, 255, 255, 0.2);
-    border-left: 5px solid white;
-    transition: 0.3s ease-in-out;
-}
-
+    gap: 0.8rem; /* Space between logo and title */
+    border-bottom: 1px solid var(--sidebar-border-color); /* Separator line */
+    margin-bottom: 1rem;
+  }
+  
+  .app-logo-image {
+    height: 40px; /* Adjust size as needed */
+    width: 40px; /* Adjust size as needed */
+    object-fit: contain; /* Ensure logo scales nicely */
+  }
+  
+  .app-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--sidebar-logo-color);
+    margin: 0; /* Reset default margin */
+    line-height: 1.2;
+  }
+  
+  /* Navigation List */
+  .sidebar-navigation {
+    flex-grow: 1; /* Takes up remaining vertical space */
+  }
+  
+  .nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .nav-item {
+    margin: 0.3rem 0; /* Vertical spacing between items */
+  }
+  
+  /* Navigation Links */
+  .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1.5rem;
+    color: var(--sidebar-text-color); /* Use base text color */
+    text-decoration: none;
+    font-size: 0.95rem; /* Slightly adjust size if needed */
+    font-weight: 500; /* Ensure sufficient weight */
+    border-radius: 6px;
+    margin: 0 0.8rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    position: relative;
+  }
+  
+  
+  .nav-icon {
+    margin-right: 1rem; /* Space between icon and label */
+    font-size: 1.3rem; /* Icon size */
+    color: var(--sidebar-icon-color);
+    transition: color 0.2s ease;
+    min-width: 24px; /* Ensure alignment */
+    text-align: center;
+    flex-shrink: 0;
+  }
+  
+  .nav-label {
+    flex-grow: 1;
+    white-space: nowrap; /* Prevent wrapping */
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Hover State */
+  .nav-link:hover {
+    background-color: var(--sidebar-hover-bg);
+    color: var(--sidebar-active-text); /* Often same as active text color */
+  }
+  .nav-link:hover .nav-icon {
+    color: var(--sidebar-active-text);
+  }
+  
+  /* Active State */
+  .nav-link.active {
+    background-color: var(--sidebar-active-bg);
+    color: var(--sidebar-active-text);
+    font-weight: 600; /* Make active link slightly bolder */
+  }
+  
+  .nav-link.active .nav-icon {
+    color: var(--sidebar-active-text);
+  }
+  
+  /* Optional: Active indicator bar */
+  /* .nav-link.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 70%;
+    width: 4px;
+    background-color: var(--color-primary);
+    border-radius: 0 2px 2px 0;
+  } */
+  
+  /* Sidebar Footer / Logout */
+  .sidebar-footer {
+    padding: 1rem 1.5rem 1.5rem 1.5rem;
+    margin-top: auto; /* Pushes footer to the bottom */
+    border-top: 1px solid var(--sidebar-border-color);
+  }
+  
+  .logout-button {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background-color: transparent;
+    border: 1px solid var(--sidebar-icon-color);
+    color: var(--sidebar-icon-color);
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    text-align: left;
+  }
+  
+  .logout-icon {
+    margin-right: 0.8rem;
+    font-size: 1.2rem;
+  }
+  
+  .logout-button:hover {
+    background-color: var(--color-error);
+    border-color: var(--color-error);
+    color: #fff;
+  }

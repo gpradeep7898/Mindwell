@@ -1,161 +1,398 @@
-.letters-container {
-    max-width: 600px;
-    margin: 40px auto;
-    padding: 20px;
+/* frontend/src/pages/AnonymousLetters.css */
+
+/* Variables (Define or replace) */
+:root {
+    --page-padding: 2rem 3rem;
+    --card-bg-color: #ffffff;
+    --card-border-color: #e0e4f0;
+    --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --color-primary: #A0D2DB; /* Example Aura blue */
+    --color-primary-dark: #78aeb5;
+    --color-text: #555;
+    --color-text-dark: #333;
+    --color-text-light: #7a7e9a;
+    --color-text-lighter: #a0a4bf;
+    --color-background-alt: #f8f9fa; /* Light grey background */
+    --color-error: #e74c3c; /* Red for errors/delete */
+    --color-like: #e83e8c; /* Pink/Red for like */
+    --border-radius: 8px;
+  }
+  
+  .anon-letters-page-container {
+    padding: var(--page-padding);
+    max-width: 900px; /* Max width for content */
+    margin: 0 auto; /* Center content */
+    box-sizing: border-box;
+  }
+  
+  /* Header */
+  .letters-header {
     text-align: center;
-    background: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* 🔹 Letter Form Styling */
-.letter-form {
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--card-border-color);
+    padding-bottom: 1.5rem;
+  }
+  
+  .letters-header .header-icon {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--color-primary-dark);
+  }
+  
+  .letters-header .page-title {
+    color: var(--color-text-dark);
+    margin-bottom: 0.3rem;
+  }
+  
+  .letters-header .page-subtitle {
+    color: var(--color-text);
+    font-size: 1rem;
+  }
+  
+  /* Submission Form */
+  .submission-form-container {
+    background-color: var(--card-bg-color);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    margin-bottom: 2rem;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.letter-form textarea {
+    gap: 1rem;
+  }
+  
+  .submission-form-container textarea {
     width: 100%;
-    height: 120px;
-    padding: 12px;
-    border: 1px solid #6a0dad;
-    border-radius: 8px;
-    font-size: 16px;
-}
-
-.letter-form button {
-    padding: 12px;
-    background: #6a0dad;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.letter-form button:hover {
-    background: #5700a3;
-}
-
-/* 🔹 Sorting Options */
-.sort-options {
-    margin: 10px 0;
-    font-size: 16px;
-}
-
-.sort-options select {
-    padding: 8px;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--card-border-color);
     border-radius: 6px;
-    border: 1px solid #6a0dad;
-}
-
-/* 🔹 Letter Card */
-.letters-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.letter-card {
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    text-align: left;
-    position: relative;
-}
-
-.letter-card p {
-    font-size: 16px;
+    font-size: 1rem;
     line-height: 1.5;
-    color: #333;
-}
-
-/* 🔹 Footer (Timestamp & Like Button) */
-.letter-footer {
+    resize: vertical; /* Allow vertical resize only */
+    min-height: 80px;
+    box-sizing: border-box;
+  }
+  
+  .submission-form-container textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(160, 210, 219, 0.3); /* Aura blue focus */
+  }
+  
+  .post-letter-button {
+    align-self: flex-end; /* Align button to the right */
+  }
+  
+  /* Login Prompt */
+  .login-prompt {
+    text-align: center;
+    margin: 2rem 0;
+    padding: 1rem;
+    background-color: var(--color-background-alt);
+    color: var(--color-text);
+    border-radius: var(--border-radius);
+    font-weight: 500;
+  }
+  
+  /* Error Messages */
+  .error-message { /* Base error styling */
+    padding: 0.8rem 1.2rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .page-error { /* General page errors */
+    background-color: rgba(231, 76, 60, 0.1);
+    border: 1px solid rgba(231, 76, 60, 0.3);
+    color: #c0392b; /* Darker red */
+  }
+  .action-error { /* Errors from specific actions */
+     background-color: rgba(231, 76, 60, 0.1);
+     border: 1px solid rgba(231, 76, 60, 0.3);
+     color: #c0392b;
+     margin-top: 1rem; /* Space above action errors */
+  }
+  .action-error svg {
+    flex-shrink: 0;
+  }
+  
+  
+  /* Content Area */
+  .letters-content-area {
+    margin-top: 1rem;
+  }
+  
+  .controls-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 10px;
-}
-
-.letter-footer span {
-    font-size: 14px;
-    color: gray;
-}
-
-.letter-footer button {
-    background: transparent;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid var(--card-border-color);
+  }
+  
+  .section-heading {
+    font-size: 1.3rem;
+    color: var(--color-text-dark);
+    margin: 0;
+  }
+  
+  /* Letter List */
+  .letters-list {
+    display: grid;
+    gap: 1.5rem;
+  }
+  
+  /* Individual Letter Card */
+  .letter-card {
+    /* Inherits from .aura-card */
+    padding: 1.2rem 1.5rem;
+    background-color: var(--card-bg-color);
+    border: 1px solid var(--card-border-color);
+    box-shadow: var(--card-shadow);
+    border-radius: var(--border-radius);
+    transition: box-shadow 0.2s ease;
+  }
+  .letter-card:hover {
+     box-shadow: var(--card-shadow-hover);
+  }
+  
+  .letter-author {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.8rem;
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+  }
+  
+  .author-avatar {
+    font-size: 1.1rem; /* Simple emoji avatar */
+  }
+  
+  .letter-author strong {
+    color: var(--color-text-dark);
+    font-weight: 600;
+  }
+  
+  .letter-timestamp {
+    margin-left: auto; /* Push timestamp to the right */
+    color: var(--color-text-lighter);
+    font-size: 0.8rem;
+  }
+  
+  .letter-content {
+    color: var(--color-text);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    white-space: pre-wrap; /* Preserve line breaks from input */
+    word-break: break-word; /* Prevent long words overflowing */
+  }
+  
+  .letter-footer {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-top: 1px solid var(--card-border-color);
+    padding-top: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .action-button {
+    background: none;
     border: none;
+    padding: 0;
     cursor: pointer;
-    font-size: 16px;
-    color: #e63946;
-}
-
-/* 🔹 Reply Section */
-.reply-section {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid #ddd;
-}
-
-.reply-section textarea {
-    width: 100%;
-    height: 80px;
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #6a0dad;
-    font-size: 14px;
-    margin-top: 10px;
-}
-
-.reply-section button {
-    margin-top: 5px;
-    padding: 8px;
-    background: #28a745;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    transition: color 0.2s ease;
+  }
+  .action-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .action-button svg {
+    font-size: 1.1rem;
+  }
+  
+  .like-button:not(:disabled):hover {
+    color: var(--color-like);
+  }
+  .like-button span {
+    font-weight: 500;
+  }
+  
+  .reply-icon-indicator {
+    color: var(--color-text-light);
+  }
+  
+  .delete-button {
+    margin-left: auto; /* Push delete button to the far right */
+    color: var(--color-text-light);
+  }
+  .delete-button:hover {
+    color: var(--color-error);
+  }
+  
+  /* Replies Section */
+  .replies-container {
+    background-color: var(--color-background-alt);
+    margin: 1rem -1.5rem -1.2rem -1.5rem; /* Extend to card edges */
+    padding: 1rem 1.5rem;
+    border-top: 1px dashed var(--card-border-color); /* Dashed separator */
+    border-radius: 0 0 var(--border-radius) var(--border-radius); /* Match bottom corners */
+  }
+  
+  .replies-heading {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-bottom: 0.8rem;
+  }
+  
+  .replies-list {
+    margin-bottom: 1rem;
+    max-height: 200px; /* Limit reply height */
+    overflow-y: auto; /* Allow scrolling */
+    padding-right: 0.5rem; /* Space for scrollbar */
+  }
+  
+  /* Hide scrollbar visually */
+  .replies-list::-webkit-scrollbar { width: 4px; }
+  .replies-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 2px; }
+  .replies-list::-webkit-scrollbar-track { background: transparent; }
+  
+  
+  .reply-item {
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .reply-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+  
+  .reply-content {
+    margin: 0;
+    color: var(--color-text);
+     word-break: break-word;
+  }
+  
+  .reply-author strong {
+    color: var(--color-text-dark);
+    font-weight: 600;
+  }
+  
+  .reply-timestamp {
+    display: block; /* Put timestamp on new line */
+    font-size: 0.75rem;
+    color: var(--color-text-lighter);
+    margin-top: 0.2rem;
+    text-align: right;
+  }
+  
+  /* Reply Form */
+  .reply-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .reply-form input[type="text"] {
+    flex-grow: 1;
+    padding: 0.5rem 0.8rem;
+    border: 1px solid var(--card-border-color);
+    border-radius: 20px; /* Pill shape */
+    font-size: 0.9rem;
+    background-color: var(--card-bg-color); /* White background */
+  }
+  .reply-form input[type="text"]:focus {
+     outline: none;
+     border-color: var(--color-primary);
+     box-shadow: 0 0 0 2px rgba(160, 210, 219, 0.3);
+  }
+  
+  .send-reply-button {
+    flex-shrink: 0;
+    background-color: var(--color-primary);
     color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 14px;
+    border-radius: 50%; /* Circle button */
+    width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
-    transition: 0.3s;
-}
-
-.reply-section button:hover {
-    background: #218838;
-}
-
-/* 🔹 Replies List */
-.replies {
-    margin-top: 10px;
-    text-align: left;
-    padding-left: 10px;
-}
-
-.reply {
-    background: #f4f4f4;
-    padding: 8px;
-    margin-top: 5px;
-    border-radius: 6px;
-    font-size: 14px;
-    color: #333;
-}
-.delete-btn {
-    background: #ff4d4d;
-    color: white;
-    border: none;
-    padding: 8px;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 5px;
-    transition: 0.3s;
-}
-
-.delete-btn:hover {
-    background: #cc0000;
-}
+    transition: background-color 0.2s ease;
+  }
+  .send-reply-button svg {
+    font-size: 1.1rem;
+  }
+  .send-reply-button:hover:not(:disabled) {
+    background-color: var(--color-primary-dark);
+  }
+  .send-reply-button:disabled {
+    background-color: var(--color-text-lighter);
+    cursor: not-allowed;
+  }
+  
+  /* Mini Spinner for buttons */
+  .mini-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  
+  
+  /* No Results Message */
+  .no-results-message {
+    text-align: center;
+    margin-top: 3rem;
+    color: var(--color-text-light);
+  }
+  
+  /* Loading Indicator (if not using GlobalLoader) */
+  .loading-message {
+     text-align: center;
+     margin-top: 3rem;
+     color: var(--color-text-light);
+  }
+  
+  /* Responsive */
+  @media (max-width: 600px) {
+    .anon-letters-page-container {
+      padding: 1rem 1.5rem;
+    }
+    .letter-author {
+      flex-wrap: wrap; /* Allow wrapping on small screens */
+    }
+    .letter-timestamp {
+       margin-left: 0;
+       width: 100%;
+       text-align: left;
+       margin-top: 0.2rem;
+    }
+     .letter-footer {
+       gap: 0.8rem;
+     }
+     .delete-button {
+       margin-left: auto; /* Keep delete button pushed right */
+     }
+  }
