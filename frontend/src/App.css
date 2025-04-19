@@ -1,0 +1,55 @@
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+  }
+  h1 {
+    color: #583a7a;
+  }
+  .logout-btn {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 4px 8px;
+    font-size: 12px;
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    z-index: 1000; /* Ensures button stays above other elements */
+    width: auto; /* Prevents full width */
+    display: inline-block;
+}
+
+.logout-btn:hover {
+    background: darkred;
+    transform: scale(1.05);
+}
+.app-container {
+  display: flex;
+  height: 100vh;
+}
+
+.content-container {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.logout-btn {
+  position: fixed;
+  top: 10px;
+  right: 20px;
+  padding: 10px 15px;
+  background-color: red;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background-color: darkred;
+}

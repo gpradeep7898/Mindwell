@@ -1,0 +1,161 @@
+.letters-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    text-align: center;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 🔹 Letter Form Styling */
+.letter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.letter-form textarea {
+    width: 100%;
+    height: 120px;
+    padding: 12px;
+    border: 1px solid #6a0dad;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.letter-form button {
+    padding: 12px;
+    background: #6a0dad;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.letter-form button:hover {
+    background: #5700a3;
+}
+
+/* 🔹 Sorting Options */
+.sort-options {
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.sort-options select {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #6a0dad;
+}
+
+/* 🔹 Letter Card */
+.letters-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.letter-card {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    position: relative;
+}
+
+.letter-card p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+}
+
+/* 🔹 Footer (Timestamp & Like Button) */
+.letter-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.letter-footer span {
+    font-size: 14px;
+    color: gray;
+}
+
+.letter-footer button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #e63946;
+}
+
+/* 🔹 Reply Section */
+.reply-section {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+}
+
+.reply-section textarea {
+    width: 100%;
+    height: 80px;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #6a0dad;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.reply-section button {
+    margin-top: 5px;
+    padding: 8px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.reply-section button:hover {
+    background: #218838;
+}
+
+/* 🔹 Replies List */
+.replies {
+    margin-top: 10px;
+    text-align: left;
+    padding-left: 10px;
+}
+
+.reply {
+    background: #f4f4f4;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #333;
+}
+.delete-btn {
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 5px;
+    transition: 0.3s;
+}
+
+.delete-btn:hover {
+    background: #cc0000;
+}

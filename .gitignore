@@ -1,0 +1,11 @@
+frontend/.env.local
+backend/firebaseServiceAccount.json
+frontend/.env
+backend/firebaseServiceAccount.json
+backend/.env
+frontend/.env
+frontend/.env
+node_modules/
+# OS generated files
+.DS_Store
+Thumbs.db
