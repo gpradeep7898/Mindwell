@@ -45,27 +45,43 @@ MindWell is a web application designed to provide accessible tools and community
 ## 📂 Project Structure
 MENTALHEALTHAPPLICATION_BACKUP/
 ├── backend/
+│ ├── node_modules/ (Ignored by git)
 │ ├── routes/ # API route handlers (Express Routers)
-│ ├── utils/ # Helper functions (e.g., chatbot logic)
-│ ├── .env # Environment variables (ignored by git)
-│ ├── firebaseServiceAccount.json # Firebase Admin credentials (ignored by git)
-│ ├── server.js # Main Express server setup
+│ │ ├── anonymousLetters.js
+│ │ ├── authMiddleware.js
+│ │ ├── chatbot.js
+│ │ └── facilities.js
+│ ├── utils/ # Helper functions
+│ │ └── chatbotHelper.js
+│ ├── .env # Environment variables (Ignored by git)
+│ ├── .firebaserc
+│ ├── .gitignore
+│ ├── firebase.json
+│ ├── firebaseServiceAccount.json # Firebase Admin credentials (Ignored by git)
+│ ├── package-lock.json
 │ ├── package.json
-│ └── ...
+│ └── server.js # Main Express server setup
 ├── frontend/
+│ ├── node_modules/ (Ignored by git)
 │ ├── public/ # Static assets, index.html
+│ │ ├── index.html
+│ │ ├── manifest.json
+│ │ └── ...
 │ ├── src/
 │ │ ├── assets/ # Images, icons, etc.
 │ │ ├── components/ # Reusable React components
 │ │ ├── pages/ # Page-level React components
 │ │ ├── services/ # Firebase config, API helpers
 │ │ ├── utils/ # Helper functions, static data
+│ │ ├── App.css
 │ │ ├── App.js # Main application component, routing
+│ │ ├── index.css
 │ │ ├── index.js # React entry point
-│ │ └── ...
-│ ├── .env # Environment variables (ignored by git)
-│ ├── package.json
-│ └── ...
+│ │ └── reportWebVitals.js
+│ ├── .env # Environment variables (Ignored by git)
+│ ├── .gitignore
+│ ├── package-lock.json
+│ └── package.json
 ├── .gitignore # Root gitignore
 └── README.md # This file
 
