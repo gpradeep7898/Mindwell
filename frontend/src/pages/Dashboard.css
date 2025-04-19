@@ -1,299 +1,344 @@
 /* frontend/src/pages/Dashboard.css */
 
-/* Variables (Define or replace) */
+/* Variables (Define globally in index.css/App.css or replace here) */
 :root {
-    --page-padding: 2rem 3rem;
-    --page-padding-mobile: 1.5rem;
-    --card-bg-color: #ffffff;
-    --card-border-color: #e0e4f0;
-    --card-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
-    --card-shadow-hover: 0 6px 15px rgba(0, 0, 0, 0.09);
-    --color-primary: #A0D2DB;
-    --color-primary-dark: #78aeb5;
-    --color-secondary: #E6E6FA; /* Lavender */
-    --color-text: #555;
-    --color-text-dark: #333;
-    --color-text-light: #7a7e9a;
-    --color-text-lighter: #a0a4bf;
-    --color-background-main: #f8f9fa; /* Page background */
-    --color-success: #28a745;
-    --color-error: #e74c3c;
-    --border-radius: 8px;
-    --input-border-color: #ccc;
-    --input-focus-border: var(--color-primary);
-    --input-focus-shadow: rgba(160, 210, 219, 0.3);
-  }
-  
-  
-  .dashboard-container {
-    padding: var(--page-padding);
-    max-width: 850px; /* Limit width */
-    margin: 0 auto; /* Center */
-  }
-  
-  .dashboard-card {
-    background-color: var(--card-bg-color);
-    padding: 2rem 2.5rem;
-    border-radius: var(--border-radius);
-    box-shadow: var(--card-shadow);
-    position: relative; /* For notification banner */
-  }
-  
-  /* Notification Banner */
-  .notification-banner {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: 0.8rem 1.5rem;
-    font-size: 0.9rem;
-    font-weight: 500;
-    border-bottom: 1px solid transparent;
-    border-radius: var(--border-radius) var(--border-radius) 0 0; /* Match top corners */
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    z-index: 10;
-  }
-  .notification-banner.success {
-    background-color: rgba(40, 167, 69, 0.1);
-    border-color: rgba(40, 167, 69, 0.3);
-    color: #1d6430; /* Darker green */
-  }
-  .notification-banner.error {
-    background-color: rgba(231, 76, 60, 0.1);
-    border-color: rgba(231, 76, 60, 0.3);
-    color: #c0392b; /* Darker red */
-  }
-  .notification-banner svg {
-    flex-shrink: 0;
-  }
-  
-  /* Greeting */
-  .dashboard-greeting {
-    color: var(--color-text-dark);
-    font-size: 1.8rem;
-    margin-top: 2rem; /* Add space if notification might show */
-    margin-bottom: 0.3rem;
-  }
-  .user-name {
-    font-weight: 600;
-    color: var(--color-primary-dark);
-  }
-  .dashboard-subtitle {
-    color: var(--color-text);
-    margin-bottom: 1.5rem;
-    font-size: 1rem;
-  }
-  
-  /* Micro-Break Button */
-  .micro-break-trigger {
-    /* Uses .aura-button .secondary */
-    display: inline-flex; /* Align icon and text */
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 2rem;
-  }
-  .micro-break-trigger svg {
-     font-size: 1.1rem;
-  }
-  
-  /* Input Sections & Groups */
-  .input-section {
-    margin-bottom: 1.5rem;
-  }
-  
-  .input-group {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .input-group label {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--color-text);
-    margin-bottom: 0.5rem;
-  }
-  
-  .mood-select,
-  textarea {
-    padding: 0.8rem 1rem;
-    border: 1px solid var(--input-border-color);
-    border-radius: 6px;
-    font-size: 1rem;
-    background-color: #fff; /* Ensure background */
-  }
-  textarea {
-     line-height: 1.5;
-     resize: vertical;
-     min-height: 80px;
-  }
-  
-  .mood-select:focus,
-  textarea:focus {
-     outline: none;
-     border-color: var(--input-focus-border);
-     box-shadow: 0 0 0 2px var(--input-focus-shadow);
-  }
-  .mood-select:disabled,
-  textarea:disabled {
-      background-color: #e9ecef;
-      cursor: not-allowed;
-  }
-  
-  /* Save Button */
-  .save-entry-button {
-    /* Uses .aura-button .primary */
-    display: block; /* Make it block level */
-    width: fit-content; /* Size to content */
-    margin: 1.5rem 0 2.5rem 0; /* Top/Bottom margin */
-  }
-  
-  /* Insights / Constellation Section */
-  .insights-section {
-    margin-bottom: 2.5rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--card-border-color);
-  }
-  .section-heading {
-    font-size: 1.3rem;
-    color: var(--color-text-dark);
-    margin-bottom: 1rem;
-  }
-  /* Styling for MoodConstellation component goes in MoodConstellation.css */
-  
-  /* Entries Section */
-  .entries-section {
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--card-border-color);
-  }
-  .entries-heading {
-    font-size: 1.3rem;
-    color: var(--color-text-dark);
-    margin-bottom: 1.5rem;
-  }
-  .entry-list-container {
-    max-height: 400px; /* Limit height and allow scroll */
-    overflow-y: auto;
-    margin-right: -15px; /* Hide scrollbar trick */
-    padding-right: 15px; /* Add padding back */
-  }
-  .entry-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  /* Individual Entry Card */
-  .entry-card {
-    background-color: var(--color-background-main); /* Slightly different bg */
-    border: 1px solid #e9ecef;
-    border-radius: 6px;
-    padding: 1rem 1.2rem;
-    margin-bottom: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start; /* Align items top */
-    gap: 1rem;
-  }
-  .entry-content {
-    flex-grow: 1;
-  }
-  .entry-mood {
-    display: inline-block;
-    font-weight: 600;
-    color: var(--color-primary-dark); /* Or use mood-specific colors */
-    margin-bottom: 0.4rem;
-    font-size: 1rem;
-  }
-  .entry-text {
-    font-size: 0.95rem;
-    color: var(--color-text);
-    line-height: 1.5;
-    margin: 0 0 0.5rem 0;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-  .entry-timestamp {
-    font-size: 0.8rem;
-    color: var(--color-text-light);
-  }
-  
-  /* Delete Button */
-  .delete-button {
-    background: none;
-    border: none;
-    color: var(--color-text-lighter);
-    cursor: pointer;
-    font-size: 1rem;
-    padding: 0.3rem; /* Make clickable area larger */
-    line-height: 1;
-    transition: color 0.2s ease;
-    flex-shrink: 0; /* Prevent button from shrinking */
-  }
-  .delete-button:hover {
-    color: var(--color-error);
-  }
-  
-  /* No Entries Message */
-  .no-entries-message {
-    text-align: center;
-    padding: 2rem 0;
-    color: var(--color-text-light);
-  }
-  
-  /* Skeleton Loader */
-  .skeleton-container {
-     padding-top: 1rem;
-  }
-  .skeleton-entry-card {
-    background-color: var(--color-background-main);
-    border: 1px solid #e9ecef;
-    border-radius: 6px;
-    padding: 1rem 1.2rem;
-    margin-bottom: 1rem;
-  }
-  .skeleton-line {
-    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-    background-size: 200% 100%;
-    animation: loading-skeleton 1.5s infinite linear;
-    border-radius: 4px;
-    height: 1em; /* Base height */
-    margin-bottom: 0.6rem;
-  }
-  .skeleton-mood { width: 30%; height: 1.1em; margin-bottom: 0.8rem; }
-  .skeleton-text { width: 90%; }
-  .skeleton-text.short { width: 60%; }
-  .skeleton-timestamp { width: 40%; height: 0.8em; margin-top: 0.5rem; margin-bottom: 0; }
-  
-  @keyframes loading-skeleton {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-  
-  /* General Loading Message (if not using skeleton) */
-  .loading-message.small-loader {
-    text-align: center;
-    padding: 2rem 0;
-    color: var(--color-text-light);
-    min-height: 280px; /* Match constellation height */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  
-  /* Responsive */
-  @media (max-width: 768px) {
-     .dashboard-container {
-        padding: var(--page-padding-mobile);
-     }
-      .dashboard-card {
-        padding: 1.5rem;
-     }
-     .dashboard-greeting { font-size: 1.6rem; }
-     .section-heading, .entries-heading { font-size: 1.2rem; }
-     /* Adjust constellation width if needed */
-     .mood-constellation-container { max-width: 100%; }
-     /* .mood-constellation-container svg { width: 100%; } */
-  }
+  --page-padding: 2rem 3rem;
+  --page-padding-mobile: 1.5rem;
+  --card-bg-color: #ffffff;
+  --card-border-color: #e0e4f0;
+  --card-shadow: 0 3px 10px rgba(0, 0, 0, 0.07);
+  --card-shadow-hover: 0 6px 15px rgba(0, 0, 0, 0.09);
+  --color-primary: #A0D2DB; /* Aura Blue */
+  --color-primary-dark: #78aeb5;
+  --color-secondary: #E6E6FA; /* Lavender */
+  --color-text: #555;
+  --color-text-dark: #333;
+  --color-text-light: #7a7e9a;
+  --color-text-lighter: #a0a4bf;
+  --color-background-main: #f8f9fa; /* Page background */
+  --color-success: #28a745; /* Green for success */
+  --color-error: #e74c3c; /* Red for errors/delete */
+  --border-radius: 8px;
+  --input-border-color: #ced4da; /* Adjusted border color */
+  --input-focus-border: var(--color-primary);
+  --input-focus-shadow: rgba(160, 210, 219, 0.3);
+  --input-disabled-bg: #e9ecef;
+  --constellation-axis-color: #ccc;
+  --constellation-line-color: var(--color-text-lighter, #a0a4bf);
+  --constellation-no-data-color: var(--color-text-light, #7a7e9a);
+}
+
+
+/* --- Main Container --- */
+.dashboard-container {
+  padding: var(--page-padding);
+  max-width: 850px; /* Overall max width */
+  margin: 0 auto; /* Center the container */
+  box-sizing: border-box;
+}
+
+/* --- Card Styling --- */
+.dashboard-card {
+  background-color: var(--card-bg-color);
+  padding: 2rem 2.5rem; /* Default padding */
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  position: relative; /* For notification banner positioning */
+
+  /* --- Centering Content --- */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center all direct children horizontally */
+}
+
+/* --- Notification Banner --- */
+.notification-banner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 0.8rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-bottom: 1px solid transparent;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  z-index: 10;
+  width: 100%; /* Ensure banner spans card width */
+  box-sizing: border-box;
+}
+.notification-banner.success {
+  background-color: rgba(40, 167, 69, 0.1);
+  border-color: rgba(40, 167, 69, 0.3);
+  color: #1d6430;
+}
+.notification-banner.error {
+  background-color: rgba(231, 76, 60, 0.1);
+  border-color: rgba(231, 76, 60, 0.3);
+  color: #c0392b;
+}
+.notification-banner svg {
+  flex-shrink: 0;
+}
+
+/* --- Greeting & Header Text --- */
+.dashboard-greeting,
+.dashboard-subtitle {
+  text-align: center; /* Center align the text itself */
+  width: 100%; /* Allow text blocks to span width before centering */
+}
+.dashboard-greeting {
+  margin-top: 2rem; /* Space below potential notification */
+  color: var(--color-text-dark);
+  font-size: 1.8rem;
+  margin-bottom: 0.3rem;
+}
+.user-name {
+  font-weight: 600;
+  color: var(--color-primary-dark);
+}
+.dashboard-subtitle {
+  color: var(--color-text);
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+/* --- Micro-Break Button --- */
+.micro-break-trigger {
+  /* Uses .aura-button .secondary */
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2.5rem;
+  /* Centered by parent flex */
+}
+.micro-break-trigger svg { font-size: 1.1rem; }
+
+/* --- Input Sections & Groups --- */
+.input-section {
+  margin-bottom: 1.5rem;
+  width: 100%;
+  max-width: 450px; /* Reduced max-width slightly */
+  /* Centered by parent flex */
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text, #555);
+  margin-bottom: 0.6rem; /* Increased space below label */
+  /* ---vvv--- Center the label text ---vvv--- */
+  text-align: center;
+  /* ---^^^---------------------------^^^--- */
+}
+
+.mood-select,
+textarea#journal-entry {
+  /* Keep existing styles: width: 100%, padding, border etc. */
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--input-border-color, #ccc);
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: var(--card-bg-color, #fff);
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-main);
+}
+textarea#journal-entry {
+   line-height: 1.5;
+   resize: vertical;
+   min-height: 90px;
+}
+
+.mood-select:focus,
+textarea#journal-entry:focus {
+   outline: none;
+   border-color: var(--input-focus-border);
+   box-shadow: 0 0 0 3px var(--input-focus-shadow);
+}
+.mood-select:disabled,
+textarea#journal-entry:disabled {
+    background-color: var(--input-disabled-bg);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* --- Save Button --- */
+.save-entry-button {
+  /* Uses .aura-button .primary */
+  width: fit-content; /* Size button to its text */
+  margin: 1.5rem 0 3rem 0; /* Vertical spacing */
+  /* Centered by parent flex */
+}
+
+/* --- Insights / Constellation Section --- */
+.insights-section {
+  margin-bottom: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--card-border-color);
+  width: 100%;
+  max-width: 600px; /* Max width for this section */
+  /* Centered by parent flex */
+  text-align: center; /* Center heading */
+}
+.section-heading { /* Shared heading style */
+  font-size: 1.3rem;
+  color: var(--color-text-dark);
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+/* Constellation container is centered via margin in its own CSS/JS */
+
+/* --- Entries Section --- */
+.entries-section {
+  padding-top: 2rem;
+  border-top: 1px solid var(--card-border-color);
+  width: 100%;
+  max-width: 650px; /* Max width for entries list area */
+  /* Centered by parent flex */
+  text-align: center; /* Center heading */
+}
+.entries-heading { /* Use shared section-heading style */
+   font-size: 1.3rem;
+   color: var(--color-text-dark);
+   font-weight: 600;
+   margin-bottom: 1.5rem;
+}
+.entry-list-container {
+  max-height: 450px; /* Increased height */
+  overflow-y: auto;
+  /* Subtle scrollbar styling (optional) */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-text-lighter) transparent;
+  padding-right: 5px; /* Ensure space for scrollbar */
+  text-align: left; /* Align list items left */
+}
+/* Webkit scrollbar styles */
+.entry-list-container::-webkit-scrollbar { width: 6px; }
+.entry-list-container::-webkit-scrollbar-track { background: transparent; }
+.entry-list-container::-webkit-scrollbar-thumb { background-color: var(--color-text-lighter); border-radius: 3px; border: 1px solid transparent; }
+
+.entry-list { list-style: none; padding: 0; margin: 0; }
+
+/* Individual Entry Card */
+.entry-card {
+  background-color: var(--color-background-main); /* Light background for contrast */
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  transition: background-color 0.2s ease;
+}
+.entry-card:hover {
+   background-color: #f1f3f5; /* Slight hover effect */
+}
+
+.entry-content { flex-grow: 1; }
+.entry-mood {
+  display: inline-block;
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  margin-bottom: 0.4rem;
+  font-size: 1rem;
+}
+.entry-text {
+  font-size: 0.95rem;
+  color: var(--color-text);
+  line-height: 1.5;
+  margin: 0 0 0.5rem 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.entry-timestamp {
+  font-size: 0.8rem;
+  color: var(--color-text-light);
+}
+
+/* Delete Button */
+.delete-button {
+  background: none;
+  border: none;
+  color: var(--color-text-lighter);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.3rem;
+  line-height: 1;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+.delete-button:hover { color: var(--color-error); }
+
+/* No Entries Message */
+.no-entries-message {
+  text-align: center;
+  padding: 2rem 0;
+  color: var(--color-text-light);
+  font-style: italic;
+}
+
+/* --- Skeleton Loader --- */
+.skeleton-container { padding-top: 1rem; }
+.skeleton-entry-card {
+  background-color: var(--color-background-main);
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1rem;
+}
+.skeleton-line {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading-skeleton 1.5s infinite linear;
+  border-radius: 4px;
+  height: 1em;
+  margin-bottom: 0.6rem;
+}
+.skeleton-mood { width: 30%; height: 1.1em; margin-bottom: 0.8rem; }
+.skeleton-text { width: 90%; }
+.skeleton-text.short { width: 60%; }
+.skeleton-timestamp { width: 40%; height: 0.8em; margin-top: 0.5rem; margin-bottom: 0; }
+
+@keyframes loading-skeleton {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* General Loading Message (if not using skeleton) */
+.loading-message.small-loader {
+  text-align: center;
+  padding: 2rem 0;
+  color: var(--color-text-light);
+  min-height: 280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%; /* Span width of container */
+}
+
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+   .dashboard-container {
+      padding: var(--page-padding-mobile);
+   }
+    .dashboard-card {
+      padding: 1.5rem;
+    }
+   .dashboard-greeting { font-size: 1.6rem; }
+   .section-heading, .entries-heading { font-size: 1.2rem; }
+   /* Allow sections to take full width on mobile */
+   .input-section, .insights-section, .entries-section { max-width: 100%; }
+   .mood-constellation-container svg { width: 100%; height: auto; } /* Ensure SVG scales */
+   .entry-list-container { max-height: 350px; } /* Adjust scroll height */
+}
