@@ -1,5 +1,3 @@
-// frontend/src/utils/quickReliefProtocols.js
-
 export const reliefProtocols = {
     panic: {
         name: "Panic Grounding Sequence",
@@ -11,14 +9,18 @@ export const reliefProtocols = {
             { text: "...hold gently (count 2)...", duration: 4000 },
             { text: "...then breathe out slowly through your mouth (count 6).", duration: 8000 },
             { text: "Repeat the breath: In (4)... Hold (2)... Out (6)...", duration: 12000 },
-            { text: "Look around. Name 5 things you can see.", duration: 15000 },
-            { text: "Listen closely. Name 4 sounds you can hear.", duration: 15000 },
-            { text: "Notice physical sensations. Name 3 things you can feel (clothes, chair, air).", duration: 15000 },
-            { text: "Identify 2 things you can smell (or imagine pleasant smells).", duration: 12000 },
-            { text: "Identify 1 thing you can taste (or recall a pleasant taste).", duration: 10000 },
+            { text: "Look around. Name 5 things you can SEE.", duration: 15000 },
+            { text: "Listen closely. Name 4 sounds you can HEAR.", duration: 15000 },
+            { text: "Notice physical sensations. Name 3 things you can FEEL (clothes, chair, air).", duration: 15000 },
+            { text: "Identify 2 things you can SMELL (or imagine pleasant smells).", duration: 12000 },
+            { text: "Identify 1 thing you can TASTE (or recall a pleasant taste).", duration: 10000 },
             { text: "Take another slow, deep breath. Notice the feeling easing.", duration: 10000 },
             { text: "You are safe. This feeling is temporary and it is passing.", duration: 8000 },
-        ]
+        ],
+        // --- Added Enhancements ---
+        musicFile: '/audio/audio1.mp3', // Path relative to /public
+        themeGradient: 'linear-gradient(to bottom, #BBD2E1, #F0EBE8)', // Adjusted softer blue/beige
+        completionMessage: "You've anchored yourself in the present. Well done."
     },
     highAnxiety: {
         name: "Anxiety Breathing Space",
@@ -26,32 +28,45 @@ export const reliefProtocols = {
         steps: [
             { text: "Find a comfortable position, sitting or lying down.", duration: 6000 },
             { text: "Place one hand on your chest, the other on your belly.", duration: 6000 },
-            { text: "Breathe in slowly through your nose, feeling your belly rise.", duration: 7000 },
-            { text: "Breathe out slowly through pursed lips, feeling your belly fall.", duration: 8000 },
-            { text: "Focus completely on the gentle rise and fall.", duration: 10000 },
-            { text: "If your mind wanders, gently guide it back to your breath.", duration: 10000 },
-            { text: "Inhale calm... Exhale tension...", duration: 10000 },
-            { text: "Continue breathing smoothly and gently.", duration: 15000 },
-            { text: "Notice the slight slowing down within you.", duration: 8000 },
-        ]
+            { text: "Breathe in slowly through your nose, feeling your belly rise gently.", duration: 7000 },
+            { text: "Breathe out slowly through pursed lips, as if blowing out a candle softly.", duration: 8000 },
+            { text: "Focus completely on the gentle rhythm of your breath.", duration: 10000 },
+            { text: "If your mind wanders, kindly bring your attention back to the breath.", duration: 10000 },
+            { text: "Feel the calm deepening with each exhale.", duration: 10000 },
+            { text: "Continue this smooth, gentle breathing.", duration: 15000 },
+            { text: "Notice the feeling of quiet settling within you.", duration: 8000 },
+        ],
+         // --- Added Enhancements ---
+        musicFile: '/audio/audio2.mp3', // Path relative to /public
+        themeGradient: 'linear-gradient(to bottom, #C1E1C1, #F5FDF5)', // Soft green gradient
+        completionMessage: "Your nervous system is calmer. Carry this peace."
     },
     overwhelm: {
-        name: "Moment of Pause",
-        description: "Create a brief, intentional space to reset when feeling overwhelmed.",
+        name: "Moment of Pause & Reset",
+        description: "Create a brief, intentional space to step back and reset when feeling overwhelmed.",
          steps: [
             { text: "Pause. Stop what you are doing for just this moment.", duration: 5000 },
-            { text: "Take three slow, deliberate breaths. Inhale deeply... Exhale fully...", duration: 15000 },
-            { text: "Ask: 'What is the *one* single thing I need to focus on next?' (If anything)", duration: 12000 },
-            { text: "If nothing is truly urgent, allow yourself this quiet space.", duration: 8000 },
-            { text: "Gently stretch your neck or roll your shoulders if you like.", duration: 10000 },
-            { text: "Acknowledge the feeling of overwhelm without judgment. It's okay.", duration: 7000 },
-            { text: "Take one more grounding breath before you gently return.", duration: 8000 },
-        ]
+            { text: "Take three slow, deliberate breaths. Inhale calm... Exhale chaos...", duration: 15000 },
+            { text: "Ask yourself kindly: 'What is ONE small, manageable step I can take next?'", duration: 12000 },
+            { text: "If no step is needed right now, simply rest in this pause.", duration: 8000 },
+            { text: "Gently roll your shoulders or stretch your neck if it feels good.", duration: 10000 },
+            { text: "Acknowledge the feeling without judgment. 'It's okay to feel overwhelmed.'", duration: 7000 },
+            { text: "Take one more deep, centering breath before you continue.", duration: 8000 },
+        ],
+         // --- Added Enhancements ---
+        musicFile: '/audio/audio3.mp3', // Path relative to /public
+        themeGradient: 'linear-gradient(to bottom, #D8BFD8, #FDF8FD)', // Soft lavender gradient
+        completionMessage: "You created space. You can proceed more calmly now."
     }
-    // Add more protocols here (e.g., for anger, sadness) following the same structure
+    // Add more protocols here following the same structure
 };
 
-// Helper function to safely get a specific protocol by name
+/**
+ * Helper function to safely get a specific protocol object by name.
+ * @param {string} protocolName - The key of the protocol (e.g., 'panic', 'highAnxiety').
+ * @returns {object | null} The protocol object or null if not found.
+ */
 export const getReliefProtocol = (protocolName) => {
-    return reliefProtocols[protocolName] || null; // Return null if name doesn't exist
+    // Check if the protocol exists before returning
+    return reliefProtocols.hasOwnProperty(protocolName) ? reliefProtocols[protocolName] : null;
 };

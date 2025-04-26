@@ -1,0 +1,18 @@
+// frontend/src/reportWebVitals.js
+// Use direct named imports from the 'web-vitals' library
+import { onCLS, onFID, onFCP, onINP, onLCP, onTTFB } from 'web-vitals';
+
+const reportWebVitals = onPerfEntry => {
+  // Check if onPerfEntry is a valid function
+  if (onPerfEntry && onPerfEntry instanceof Function) {
+    // Call the functions directly using the imported handlers
+    onCLS(onPerfEntry);
+    onFID(onPerfEntry);
+    onFCP(onPerfEntry);
+    onINP(onPerfEntry); // Note: onINP is the modern replacement/addition
+    onLCP(onPerfEntry);
+    onTTFB(onPerfEntry);
+  }
+};
+
+export default reportWebVitals; // Keep the default export

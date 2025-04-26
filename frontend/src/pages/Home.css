@@ -1,6 +1,7 @@
 /* frontend/src/pages/Home.css */
+/* Updated Version for Dynamic Wellness Feed */
 
-/* Variables (Define or replace) */
+/* Variables (Adjust these to match your theme) */
 :root {
   --color-primary: #A0D2DB; /* Aura blue */
   --color-primary-dark: #78aeb5;
@@ -11,9 +12,14 @@
   --color-background-main: #ffffff;
   --color-background-alt: #f8f9fa; /* Light grey */
   --color-background-dark: #2c3e50; /* Example dark section bg */
+  --card-border-color: #eee; /* Added for card borders */
   --border-radius: 8px;
   --section-padding: 4rem 2rem; /* Default padding for sections */
   --section-padding-mobile: 2.5rem 1.5rem;
+
+  /* Optional gradient variables for Hero */
+  --color-gradient-start: #a0d2db;
+  --color-gradient-end: #78aeb5;
 }
 
 /* General Container */
@@ -30,14 +36,15 @@ body, h1, h2, h3, h4, p {
   margin: 0;
 }
 
+/* Base styles for the page wrapper if needed */
 .home-outer-container {
-  /* No specific styles needed, sections handle background */
+  /* No specific styles needed currently, sections handle background */
 }
 
 
-/* Hero Section */
+/* --- Hero Section --- */
 .hero-section {
-  background: linear-gradient(to right, var(--color-gradient-start, #a0d2db), var(--color-gradient-end, #78aeb5));
+  background: linear-gradient(to right, var(--color-gradient-start), var(--color-gradient-end));
   background-size: cover;
   background-position: center center;
   color: var(--color-text-light);
@@ -48,11 +55,11 @@ body, h1, h2, h3, h4, p {
   align-items: center; /* Vertically center content */
   justify-content: center;
 }
-/* Fallback background color if image doesn't load */
-.hero-section:not(:has(>img)) { /* Simple check */
+
+/* Fallback background color */
+.hero-section:not(:has(>img)) {
   background-color: var(--color-background-dark);
 }
-
 
 .hero-content h1 {
   font-size: 2.8rem; /* Large hero heading */
@@ -74,130 +81,166 @@ body, h1, h2, h3, h4, p {
   /* Uses .aura-button .primary .large */
   padding: 0.9rem 2rem; /* Larger padding */
   font-size: 1.1rem;
+  /* Make sure .aura-button styles are defined globally or imported */
 }
 
 
-/* Section Base Styles */
-.services-section, .testimonials-section, .cta-section {
+/* --- Wellness Feed Section --- */
+.wellness-feed-section {
   padding: var(--section-padding);
+  background-color: var(--color-background-alt); /* Light grey background */
 }
 
-.section-title {
+.wellness-feed-section .section-title {
   text-align: center;
   font-size: 2rem;
   font-weight: 600;
   color: var(--color-text-dark);
   margin-bottom: 2.5rem;
-}
-
-/* Services Section */
-.services-section {
-  background-color: var(--color-background-alt); /* Light grey background */
-}
-
-.service-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Responsive grid */
-  gap: 1.8rem;
-}
-
-.service-card {
-  /* Inherits .aura-card */
-  background-color: #ffffff;
-  padding: 2rem 1.5rem;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-.service-card:hover {
-   transform: translateY(-5px);
-   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-}
-
-.card-icon {
-  font-size: 2.5rem; /* Icon size */
-  color: var(--color-primary); /* Theme color for icon */
-  margin-bottom: 1rem;
-  background-color: rgba(160, 210, 219, 0.1); /* Faint background circle */
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  display: flex;
+  display: flex; /* Align icon and text */
   align-items: center;
   justify-content: center;
 }
 
-.service-card h3 {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: var(--color-text-dark);
-  margin-bottom: 0.5rem;
-}
-
-.service-card p {
-  font-size: 0.95rem;
-  color: var(--color-text);
-  margin-bottom: 1.5rem;
-  flex-grow: 1; /* Push button down */
-}
-
-.service-card .aura-button.secondary {
-  margin-top: auto; /* Align button to bottom */
-}
-
-
-/* Testimonials Section */
-.testimonials-section {
-  background-color: var(--color-background-main);
-}
-
-.testimonials-grid {
+/* Grid for News Cards */
+.news-cards-grid {
   display: grid;
+  /* Adjust minmax for desired card size and responsiveness */
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.8rem;
+  gap: 1.8rem; /* Adjust gap as needed */
 }
 
-.testimonial-card {
-  background-color: var(--color-background-alt);
-  padding: 1.8rem;
+/* Individual News Card Styling */
+.news-card { /* Applies to the motion.div wrapping the link */
+  background-color: var(--color-background-main); /* White background */
   border-radius: var(--border-radius);
-  border: 1px solid var(--card-border-color);
+  overflow: hidden; /* Ensure image corners are rounded */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Subtle shadow */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex; /* Needed for flex-direction on the link */
+  flex-direction: column; /* Stack image and content vertically */
+  height: 100%; /* Make cards in a row equal height if needed */
+  color: var(--color-text); /* Default text color for the card */
+  /* Ensure Framer Motion doesn't hide it, these are defaults but good to check */
+  opacity: 1;
+  transform: none;
+}
+
+.news-card:hover {
+   transform: translateY(-5px);
+   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Make the entire card clickable via the <a> tag */
+.news-card-link {
+  text-decoration: none; /* Remove underline from link */
+  color: inherit; /* Inherit text color from .news-card */
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Make link fill the card */
+}
+
+
+/* Image Container & Image */
+.news-card-image-container {
+  width: 100%;
+  /* Maintain aspect ratio, e.g., 16:9 */
+  padding-top: 56.25%; /* 9 / 16 * 100% */
   position: relative;
-  padding-top: 2.5rem; /* Space for quote icon */
-}
-.testimonial-card::before { /* Quote icon */
-   content: '“';
-   font-family: Georgia, serif;
-   font-size: 4rem;
-   color: var(--color-primary);
-   opacity: 0.3;
-   position: absolute;
-   top: 0.5rem;
-   left: 1rem;
-   line-height: 1;
+  background-color: var(--color-background-alt); /* Placeholder bg color */
 }
 
-
-.testimonial-quote {
-  font-size: 1rem;
-  font-style: italic;
-  color: var(--color-text);
-  margin-bottom: 1rem;
-  line-height: 1.6;
+.news-card-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Cover the container, might crop */
+  border-bottom: 1px solid var(--card-border-color); /* Optional separator */
+  display: block; /* Ensure it behaves like a block element */
 }
 
-.testimonial-author {
-  font-size: 0.95rem;
+/* Card Content Area */
+.news-card-content {
+  padding: 1rem 1.2rem; /* Padding inside the card */
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; /* Allow content to take remaining space */
+}
+
+.news-card-source {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-primary); /* Use theme color for source */
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block; /* Ensure it takes its own line */
+}
+
+.news-card-title {
+  font-size: 1.1rem;
   font-weight: 600;
-  color: var(--color-text-dark);
-  text-align: right;
+  color: var(--color-text-dark); /* <<< IMPORTANT: Dark text color for title */
+  margin-bottom: 0.6rem;
+  line-height: 1.4;
+  /* Optional: Limit title lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Show 3 lines max */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* Ensure visibility */
+  visibility: visible;
+  opacity: 1;
+}
+
+.news-card-description {
+  font-size: 0.9rem;
+  color: var(--color-text); /* <<< IMPORTANT: Default text color for description */
+  line-height: 1.5;
+  flex-grow: 1; /* Push description down if card heights vary */
+  margin-bottom: 0; /* Remove default paragraph margin if needed */
+  /* Optional: Limit description lines */
+   display: -webkit-box;
+   -webkit-line-clamp: 3; /* Show 3 lines max */
+   -webkit-box-orient: vertical;
+   overflow: hidden;
+   text-overflow: ellipsis;
+   /* Ensure visibility */
+   visibility: visible;
+   opacity: 1;
+}
+
+/* Error and Info Messages Styling (Ensure visibility) */
+.error-message {
+  color: #dc3545; /* Bootstrap danger color */
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  text-align: center;
+  margin: 1rem 0; /* Add some margin */
+}
+
+.info-message {
+  color: var(--color-text);
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.api-attribution {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #aaa;
+  margin-top: 2rem;
 }
 
 
-/* Call to Action Section */
+/* --- Call to Action Section --- */
 .cta-section {
+  padding: var(--section-padding);
   background-color: var(--color-background-dark); /* Dark background */
   color: var(--color-text-light);
   text-align: center;
@@ -218,9 +261,12 @@ body, h1, h2, h3, h4, p {
 }
 .cta-button {
   /* Uses .aura-button .primary .large */
+  /* These might depend on your global .aura-button styles */
   background-color: var(--color-primary);
   border-color: var(--color-primary);
   color: var(--color-text-dark); /* Dark text on light primary button */
+  padding: 0.9rem 2rem;
+  font-size: 1.1rem;
 }
 .cta-button:hover {
    background-color: var(--color-primary-dark);
@@ -229,21 +275,50 @@ body, h1, h2, h3, h4, p {
 }
 
 
-/* Responsive Adjustments */
+/* --- Responsive Adjustments --- */
 @media (max-width: 992px) {
    .hero-content h1 { font-size: 2.4rem; }
    .hero-content .subtitle { font-size: 1.1rem; }
-   .section-title { font-size: 1.8rem; }
+   .wellness-feed-section .section-title { font-size: 1.8rem; } /* Adjusted */
    .cta-content h2 { font-size: 2rem; }
 }
 
 @media (max-width: 768px) {
-    .services-section, .testimonials-section, .cta-section {
+    .hero-section, .wellness-feed-section, .cta-section { /* Included wellness feed */
         padding: var(--section-padding-mobile);
     }
     .hero-content h1 { font-size: 2rem; }
     .hero-content .subtitle { font-size: 1rem; }
-    .service-cards-grid, .testimonials-grid { gap: 1.2rem; }
+    .news-cards-grid { gap: 1.2rem; } /* Adjusted gap for smaller screens */
     .cta-content h2 { font-size: 1.8rem; }
     .cta-content .subtitle { font-size: 1rem; }
+}
+
+/* Ensure Global Loader styling is available if not defined globally */
+/* Example basic loader styles - Adjust if you have a component */
+.global-loader-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: var(--color-text);
+}
+.global-loader-container .spinner {
+  /* Add your spinner animation styles here */
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border-left-color: var(--color-primary);
+  animation: spin 1s ease infinite;
+  margin-bottom: 1rem;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.global-loader-container p {
+  font-size: 0.95rem;
 }

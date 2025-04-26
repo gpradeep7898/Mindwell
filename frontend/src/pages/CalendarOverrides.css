@@ -1,0 +1,176 @@
+/* frontend/src/pages/CalendarOverrides.css */
+
+/* --- Target the specific calendar instance using the class added in Dashboard.js --- */
+.dashboard-calendar {
+    width: 100%;                     /* Take full width of its column */
+    max-width: 340px;                /* Limit maximum width */
+    border: 1px solid var(--card-border-color, #e0e4f0); /* Match card border */
+    border-radius: var(--border-radius, 8px); /* Match card border radius */
+    background-color: var(--color-background-main, #f8f9fa); /* Use a light background */
+    font-family: var(--font-main, sans-serif); /* Use main app font */
+    line-height: 1.2;                /* Adjust line height */
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+    padding: 8px;                   /* Small padding around the calendar content */
+  }
+  
+  /* --- Navigation Bar (Arrows, Month/Year Label) --- */
+  .dashboard-calendar .react-calendar__navigation {
+    display: flex;
+    height: 44px;                    /* Set fixed height */
+    margin-bottom: 0.8em;            /* Space below navigation */
+    align-items: center;             /* Vertically center nav items */
+  }
+  .dashboard-calendar .react-calendar__navigation button {
+    min-width: 44px;                 /* Ensure buttons have enough clickable area */
+    background: none;                /* Remove default background */
+    border: none;                    /* Remove default border */
+    color: var(--color-primary-dark, #78aeb5); /* Use theme color for arrows */
+    font-size: 1.1rem;               /* Adjust arrow size */
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-radius: 4px;              /* Slightly round buttons */
+  }
+  .dashboard-calendar .react-calendar__navigation button:enabled:hover,
+  .dashboard-calendar .react-calendar__navigation button:enabled:focus {
+    background-color: #e9ecef;       /* Light background on hover/focus */
+    outline: none;
+  }
+  .dashboard-calendar .react-calendar__navigation button:disabled {
+    color: #ccc;                     /* Dim disabled arrows */
+    cursor: not-allowed;
+  }
+  .dashboard-calendar .react-calendar__navigation__label { /* Month/Year text */
+    flex-grow: 1 !important;         /* Allow label to take available space */
+    font-weight: 600;                /* Make label slightly bolder */
+    font-size: 0.95rem;
+    color: var(--color-text-dark, #333); /* Use dark text color */
+    border: none;                    /* Remove border if it appears */
+    background: none;                /* Remove background if it appears */
+    padding: 0 0.5rem;               /* Add some horizontal padding */
+    cursor: default;                 /* Indicate it's not clickable (unless view changes are enabled) */
+  }
+  .dashboard-calendar .react-calendar__navigation__label:enabled:hover,
+  .dashboard-calendar .react-calendar__navigation__label:enabled:focus {
+      background-color: transparent; /* Prevent background change on hover */
+  }
+  
+  
+  /* --- Weekday Names (Sun, Mon, Tue...) --- */
+  .dashboard-calendar .react-calendar__month-view__weekdays {
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 500;                /* Slightly less bold than nav label */
+    font-size: 0.65em;               /* Small font size for weekdays */
+    color: var(--color-text-light, #7a7e9a); /* Use light text color */
+    margin-bottom: 0.6em;            /* Space below weekdays */
+    padding-bottom: 0.4em;           /* Add padding below */
+    border-bottom: 1px solid var(--card-border-color, #e0e4f0); /* Separator line */
+  }
+  .dashboard-calendar .react-calendar__month-view__weekdays__weekday abbr {
+    text-decoration: none;           /* Remove underlines from abbreviations */
+  }
+  
+  /* --- Day Tiles (The numbered squares) --- */
+  .dashboard-calendar .react-calendar__tile {
+    max-width: 100%;                 /* Ensure tile doesn't exceed container width */
+    padding: 0.7em 0.5em;            /* Adjust padding within the tile */
+    background: none;                /* Transparent background by default */
+    text-align: center;
+    line-height: 18px;               /* Adjust line height for number */
+    font-size: 0.8rem;               /* Font size for the day number */
+    border: none;                    /* Remove default button border */
+    border-radius: 4px;              /* Rounded corners for tiles */
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    color: var(--color-text, #555);  /* Default text color for numbers */
+    position: relative;              /* Needed for the ::after pseudo-element */
+  }
+  
+  /* Tile Hover/Focus state */
+  .dashboard-calendar .react-calendar__tile:enabled:hover,
+  .dashboard-calendar .react-calendar__tile:enabled:focus {
+    background-color: #e6e6e6;       /* Light gray background on hover/focus */
+    outline: none;
+  }
+  
+  /* Tile for Today's date */
+  .dashboard-calendar .react-calendar__tile--now {
+    background-color: rgba(160, 210, 219, 0.15); /* Very light Aura Blue background */
+    font-weight: bold;               /* Make today's number bold */
+    color: var(--color-primary-dark, #78aeb5); /* Use theme color for today's number */
+  }
+  .dashboard-calendar .react-calendar__tile--now:enabled:hover,
+  .dashboard-calendar .react-calendar__tile--now:enabled:focus {
+      background-color: rgba(160, 210, 219, 0.3); /* Darker background on hover */
+  }
+  .dashboard-calendar .react-calendar__tile.is-selected {
+    background-color: var(--color-primary-dark, #78aeb5) !important; /* Use a prominent background */
+    color: white !important; /* Ensure text is readable */
+    /* Maybe add a border */
+     /* border: 2px solid var(--color-primary, #A0D2DB); */
+  }
+  /* Tile for Active/Selected date (if selection is used/enabled) */
+  .dashboard-calendar .react-calendar__tile--active {
+    background: var(--color-primary, #A0D2DB); /* Use primary theme color for selected */
+    color: white;                    /* White text on selected */
+    font-weight: bold;
+  }
+  .dashboard-calendar .react-calendar__tile--active:enabled:hover,
+  .dashboard-calendar .react-calendar__tile--active:enabled:focus {
+    background: var(--color-primary-dark, #78aeb5); /* Darker theme color on hover */
+  }
+  
+  /* --- *** Highlighted Day (Tile with an entry) *** --- */
+  /* Style the tile itself slightly if it has an entry */
+  .dashboard-calendar .react-calendar__tile.has-entry {
+    font-weight: bold;               /* Make the number bold */
+    /* Optional: Slightly different background? */
+    /* background-color: rgba(0, 0, 0, 0.02); */
+  }
+  
+  /* Add a dot below the number using a pseudo-element */
+  .dashboard-calendar .react-calendar__tile.has-entry::after {
+    content: '';                      /* Required for pseudo-elements */
+    position: absolute;               /* Position relative to the tile */
+    bottom: 4px;                      /* Position near the bottom */
+    left: 50%;                        /* Center horizontally */
+    transform: translateX(-50%);     /* Fine-tune horizontal centering */
+    width: 5px;                       /* Dot width */
+    height: 5px;                      /* Dot height */
+    border-radius: 50%;               /* Make it a circle */
+    background-color: var(--color-primary-dark, #78aeb5); /* Color of the dot (theme color) */
+  }
+  
+  /* Adjust dot color if the tile is also 'today' or 'active' for contrast */
+  .dashboard-calendar .react-calendar__tile--now.has-entry::after {
+     background-color: var(--color-primary-dark, #78aeb5); /* Keep theme color, or maybe white? */
+     /* If --now background is dark, use white: */
+     /* background-color: white; */
+  }
+  .dashboard-calendar .react-calendar__tile--active.has-entry::after {
+     background-color: white;         /* White dot on active background */
+  }
+  
+  
+  /* --- Tiles for neighboring months (optional styling) --- */
+  .dashboard-calendar .react-calendar__month-view__days__day--neighboringMonth {
+      color: #ccc;                   /* Dim numbers from adjacent months */
+      cursor: default;               /* Indicate they are not primary interaction targets */
+  }
+  .dashboard-calendar .react-calendar__month-view__days__day--neighboringMonth::after {
+      display: none;                 /* Hide the entry dot for neighboring month days */
+  }
+  
+  .dashboard-calendar .react-calendar__tile:enabled:hover,
+  .dashboard-calendar .react-calendar__tile:enabled:focus {
+  background-color: #e6e6e6;
+  outline: none;
+}
+  /* --- Other view tiles (Year, Decade - less critical for this use case) --- */
+  .dashboard-calendar .react-calendar__year-view .react-calendar__tile,
+  .dashboard-calendar .react-calendar__decade-view .react-calendar__tile,
+  .dashboard-calendar .react-calendar__century-view .react-calendar__tile {
+    padding: 1.5em 0.5em;             /* Adjust padding for larger view tiles */
+    font-size: 0.9rem;
+  }

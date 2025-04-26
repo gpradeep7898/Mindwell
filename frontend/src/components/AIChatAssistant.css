@@ -1,0 +1,290 @@
+/* frontend/src/components/AIChatAssistant.css */
+/* Styles for the dynamic AI Chat Assistant component */
+
+/* Define CSS Variables (customize these to match your MindWell theme) */
+:root {
+    --chat-width: 95%;                 /* Default width */
+    --chat-max-width: 500px;           /* Max width on larger screens */
+    --chat-max-height: 70vh;           /* Max height before scrolling */
+    --chat-min-height: 300px;          /* Minimum height */
+
+    --chat-bg: #ffffff;                /* Background of the main container */
+    --chat-border: #e0e4f0;           /* Border color */
+    --chat-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); /* Box shadow */
+
+    --chat-header-bg: var(--color-primary, #A0D2DB); /* Use theme primary or fallback */
+    --chat-header-text: #ffffff;       /* Text color for header */
+
+    --messages-bg: #f8f9fa;            /* Background of the messages area */
+
+    --user-message-bg: var(--color-primary-dark, #78aeb5); /* User bubble color */
+    --user-message-text: #ffffff;      /* User bubble text color */
+    --ai-message-bg: #e9ecef;           /* AI bubble color */
+    --ai-message-text: var(--color-text-dark, #333); /* AI bubble text color */
+
+    --input-area-bg: #ffffff;          /* Background of the input form area */
+    --input-bg: #f1f3f5;               /* Background of the input field itself */
+    --input-border: #dee2e6;           /* Border of the input field */
+    --input-border-focus: var(--color-primary-dark, #78aeb5); /* Border on focus */
+    --input-text: var(--color-text-dark, #333); /* Text color in input */
+
+    --button-bg: var(--color-primary, #A0D2DB);    /* Send button background */
+    --button-bg-hover: var(--color-primary-dark, #78aeb5); /* Send button hover */
+    --button-text: #ffffff;            /* Send button icon/text color */
+    --button-disabled-opacity: 0.6;    /* Opacity for disabled button */
+
+    --error-message-bg: #f8d7da;       /* Background for error messages in chat */
+    --error-message-text: #721c24;     /* Text color for error messages */
+    --error-message-border: #f5c6cb;   /* Border for error messages */
+    --error-icon-color: #721c24;      /* Color for error icon */
+
+    --loading-text-color: #6c757d;     /* Color for "Thinking..." text */
+
+    --disclaimer-bg: #f8f9fa;         /* Background for disclaimer area */
+    --disclaimer-text-color: #6c757d; /* Text color for disclaimer */
+    --disclaimer-border-top: #e9ecef; /* Border above disclaimer */
+
+    --chat-border-radius: 12px;        /* Main container border radius */
+    --message-border-radius: 18px;     /* Bubble border radius */
+    --input-border-radius: 25px;       /* Input field border radius */
+    --button-border-radius: 50%;       /* Send button border radius (circle) */
+}
+
+/* --- Main Chat Container --- */
+.ai-chat-container {
+    background-color: var(--chat-bg);
+    border-radius: var(--chat-border-radius);
+    box-shadow: var(--chat-shadow);
+    border: 1px solid var(--chat-border);
+    display: flex;
+    flex-direction: column;
+    width: var(--chat-width);
+    max-width: var(--chat-max-width);
+    height: auto; /* Adjusts to content */
+    min-height: var(--chat-min-height);
+    max-height: var(--chat-max-height);
+    overflow: hidden; /* Contains children */
+    margin: 1.5rem auto; /* Center component on page (adjust as needed) */
+}
+
+/* --- Chat Header --- */
+.chat-header {
+    background-color: var(--chat-header-bg);
+    color: var(--chat-header-text);
+    padding: 0.8rem 1.2rem;
+    font-weight: 600;
+    font-size: 1.05rem;
+    border-top-left-radius: var(--chat-border-radius); /* Match container */
+    border-top-right-radius: var(--chat-border-radius);/* Match container */
+    display: flex;
+    align-items: center;
+    gap: 0.6rem; /* Space between icon and text */
+    flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+/* --- Messages Area --- */
+.chat-messages {
+    flex-grow: 1; /* Allows this area to expand */
+    overflow-y: auto; /* Enables vertical scrolling */
+    padding: 1rem 1.2rem;
+    background-color: var(--messages-bg);
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem; /* Space between messages */
+}
+
+/* --- Individual Message Bubbles --- */
+.message {
+    padding: 0.7rem 1rem; /* Padding inside bubbles */
+    border-radius: var(--message-border-radius);
+    max-width: 85%; /* Max width of a bubble */
+    word-wrap: break-word;
+    line-height: 1.45;
+    font-size: 0.95rem;
+    position: relative; /* Needed for potential future elements like timestamps */
+}
+
+/* Paragraphs within messages */
+.message p {
+    margin-top: 0;
+    margin-bottom: 0.3em; /* Space between paragraphs */
+}
+.message p:last-child {
+    margin-bottom: 0; /* No extra space after the last paragraph */
+}
+
+/* User Message Styling */
+.user-message {
+    background-color: var(--user-message-bg);
+    color: var(--user-message-text);
+    align-self: flex-end; /* Align to the right */
+    border-bottom-right-radius: 6px; /* Slightly flatten one corner */
+    margin-left: auto; /* Push to right */
+}
+
+/* AI Message Styling */
+.ai-message {
+    background-color: var(--ai-message-bg);
+    color: var(--ai-message-text);
+    align-self: flex-start; /* Align to the left */
+    border-bottom-left-radius: 6px; /* Slightly flatten one corner */
+    margin-right: auto; /* Push to left */
+}
+
+/* Error Message Styling */
+.message.error-message {
+    background-color: var(--error-message-bg);
+    color: var(--error-message-text);
+    border: 1px solid var(--error-message-border);
+    font-style: italic;
+    font-size: 0.9rem;
+    display: flex; /* Align icon and text */
+    align-items: center;
+}
+.message.error-message svg {
+    color: var(--error-icon-color);
+    margin-right: 0.4em;
+    flex-shrink: 0; /* Prevent icon shrinking */
+}
+
+
+/* Loading Indicator Styling */
+.loading-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-style: italic;
+    color: var(--loading-text-color);
+    opacity: 0.9;
+}
+
+/* --- Input Area --- */
+.chat-input-form {
+    display: flex;
+    align-items: center; /* Vertically align input and button */
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--chat-border);
+    background-color: var(--input-area-bg);
+    flex-shrink: 0; /* Prevent input area from shrinking */
+}
+
+.chat-input-form input {
+    flex-grow: 1; /* Input takes available space */
+    padding: 0.7rem 1rem; /* Input padding */
+    border: 1px solid var(--input-border);
+    background-color: var(--input-bg);
+    border-radius: var(--input-border-radius);
+    margin-right: 0.6rem; /* Space between input and button */
+    font-size: 0.95rem;
+    color: var(--input-text);
+    outline: none; /* Remove default outline */
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.chat-input-form input:focus {
+   border-color: var(--input-border-focus);
+   box-shadow: 0 0 0 3px rgba(120, 174, 181, 0.15); /* Subtle focus glow */
+}
+.chat-input-form input::placeholder {
+    color: #888; /* Placeholder text color */
+    opacity: 0.8;
+}
+/* Disabled state for input */
+.chat-input-form input:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Send Button Styling */
+.chat-input-form button {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+    border: none;
+    border-radius: var(--button-border-radius);
+    width: 40px;  /* Button size */
+    height: 40px; /* Button size */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+    font-size: 1.2rem; /* Icon size */
+    flex-shrink: 0; /* Prevent button shrinking */
+}
+
+.chat-input-form button:hover:not(:disabled) {
+    background-color: var(--button-bg-hover);
+}
+/* Disabled state for button */
+.chat-input-form button:disabled {
+    opacity: var(--button-disabled-opacity);
+    cursor: not-allowed;
+    background-color: var(--button-bg); /* Keep base color but faded */
+}
+
+/* --- Disclaimer Area --- */
+.chat-disclaimer {
+    font-size: 0.75rem;
+    color: var(--disclaimer-text-color);
+    text-align: center;
+    padding: 0.6rem 1rem;
+    border-top: 1px solid var(--disclaimer-border-top);
+    background-color: var(--disclaimer-bg);
+    flex-shrink: 0; /* Prevent disclaimer from shrinking */
+    border-bottom-left-radius: var(--chat-border-radius); /* Match container */
+    border-bottom-right-radius: var(--chat-border-radius);/* Match container */
+    line-height: 1.4;
+}
+
+/* --- Spinner Animation --- */
+/* Shared animation for loading indicators */
+.spinner, .spinner-inline {
+    animation: spin 1.2s linear infinite;
+    display: inline-block; /* Ensure it takes space */
+}
+/* Specific styles for spinner in button */
+.spinner-inline {
+    width: 1em; /* Size relative to button font size */
+    height: 1em;
+}
+
+/* Keyframes for the spinning animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 600px) {
+    :root {
+        /* Adjust sizes for smaller screens */
+        --chat-max-width: 100%;
+        --chat-max-height: 80vh;
+        --chat-border-radius: 0; /* Full width, no radius */
+    }
+    .ai-chat-container {
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        box-shadow: none; /* Remove shadow on small screens */
+        margin: 0 auto; /* Remove side margins */
+        max-width: 100%;
+        width: 100%;
+    }
+     .chat-header {
+        border-radius: 0;
+    }
+    .chat-disclaimer {
+        border-radius: 0;
+    }
+    .message {
+        max-width: 90%; /* Allow bubbles to be slightly wider */
+    }
+    .chat-input-form input {
+        padding: 0.6rem 0.9rem;
+    }
+    .chat-input-form button {
+        width: 38px;
+        height: 38px;
+    }
+}

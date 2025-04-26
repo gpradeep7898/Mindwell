@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { FiZap, FiShield, FiWind, FiPauseCircle } from 'react-icons/fi';
 // Import the overlay component and data utils
 import QuickReliefOverlay from '../components/QuickReliefOverlay';
-import { reliefProtocols, getReliefProtocol } from '../utils/quickReliefProtocols'; // Ensure path is correct
+import { reliefProtocols, getReliefProtocol } from '../utils/quickReliefProtocols'; 
 import './QuickRelief.css'; // Link specific styles
 
 // --- Animation Variants ---

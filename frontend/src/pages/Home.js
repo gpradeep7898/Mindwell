@@ -1,145 +1,199 @@
 // frontend/src/pages/Home.js
-import React from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion"; // Import motion
-import { FiUsers, FiMessageCircle, FiClipboard, FiMapPin } from "react-icons/fi"; // Example icons
-import "./Home.css"; // Link specific styles
+// TESTING VERSION - Framer Motion REMOVED, Debug Logs ACTIVE
 
-// --- Animation Variants ---
-const sectionVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: "easeOut", staggerChildren: 0.2 } // Add stagger for children
-  },
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+// import { motion } from "framer-motion"; // <-- Removed Framer Motion import
+import axios from 'axios';
+import { FiBookOpen } from "react-icons/fi";
+import GlobalLoader from "../components/GlobalLoader";
+
+import "./Home.css"; // Ensure this links to the final Home.css
+
+// --- Animation Variants REMOVED ---
+// const sectionVariants = { ... };
+// const cardVariants = { ... };
+
+// --- Individual Article Card Component (No Motion) ---
+const ArticleCard = ({ article }) => {
+    const placeholderImage = "/assets/placeholder-news.png"; // Make sure this path is correct
+    const imageUrl = article.urlToImage || placeholderImage;
+
+    const handleImageError = (e) => {
+        e.target.onerror = null;
+        if (e.target.src !== placeholderImage) {
+            console.warn(`Image failed to load: ${article.urlToImage}. Falling back to placeholder.`);
+            e.target.src = placeholderImage;
+        }
+    };
+
+    const descriptionSnippet = article.description ?
+        (article.description.length > 120 ? article.description.substring(0, 117) + "..." : article.description)
+        : "No description available.";
+
+    if (!article.title || article.title === '[Removed]' || !article.url) {
+        console.warn("ArticleCard rendering skipped due to missing title or URL:", article);
+        return null;
+    }
+
+    return (
+        // Using regular div instead of motion.div
+        <div className="aura-card news-card"> {/* Removed variants */}
+            <a href={article.url} target="_blank" rel="noopener noreferrer" className="news-card-link">
+                <div className="news-card-image-container">
+                     <img
+                        src={imageUrl}
+                        alt={article.title}
+                        className="news-card-image"
+                        onError={handleImageError}
+                        loading="lazy"
+                     />
+                </div>
+                <div className="news-card-content">
+                     <span className="news-card-source">{article.source?.name || 'Unknown Source'}</span>
+                     <h3 className="news-card-title">{article.title}</h3>
+                     <p className="news-card-description">{descriptionSnippet}</p>
+                </div>
+            </a>
+        </div>
+    );
 };
 
-const cardVariants = {
-    hidden: { opacity: 0, scale: 0.95, y: 20 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      y: 0,
-      transition: { duration: 0.5, ease: "easeOut" },
-    },
-  };
-
-// --- Component ---
+// --- Home Component (No Motion) ---
 const Home = () => {
+  const [articles, setArticles] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch articles from backend endpoint on component mount
+  useEffect(() => {
+    const fetchWellnessFeed = async () => {
+      console.log("DEBUG: useEffect fetchWellnessFeed triggered.");
+      setIsLoading(true);
+      setError(null);
+      let fetchError = null;
+
+      try {
+        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8081';
+        const endpoint = `${apiUrl}/api/wellness-feed`;
+        console.log(`DEBUG: Attempting to fetch wellness feed from: ${endpoint}`);
+
+        const response = await axios.get(endpoint);
+        console.log("DEBUG: RAW API Response Data:", response.data);
+
+        let fetchedArticles = [];
+        if (response.data && Array.isArray(response.data.articles)) {
+            fetchedArticles = response.data.articles;
+        } else if (Array.isArray(response.data)) {
+             fetchedArticles = response.data;
+             console.warn("DEBUG: API response data root is an array.");
+        } else {
+            console.warn("DEBUG: Unexpected API response structure.", response.data);
+        }
+
+        console.log("DEBUG: Fetched Articles Array (before filtering):", fetchedArticles);
+
+        const validArticles = fetchedArticles.filter(article => {
+            const isValid = article && article.title && article.title !== '[Removed]' && article.url;
+            return isValid;
+        });
+        console.log("DEBUG: Filtered Valid Articles (after filtering):", validArticles);
+
+        setArticles(validArticles);
+        console.log(`DEBUG: State update - setArticles called with ${validArticles.length} articles.`);
+
+      } catch (err) {
+        console.error("ERROR fetching wellness feed:", err);
+        fetchError = "Could not load wellness insights. ";
+        if (err.response) {
+             console.error("Error response data:", err.response.data);
+             console.error("Error response status:", err.response.status);
+             fetchError += `Server responded with status ${err.response.status}.`;
+        } else if (err.request) {
+            console.error("Error request details:", err.request);
+            fetchError += "Could not reach the server.";
+        } else {
+            console.error('Error setting up request:', err.message);
+            fetchError += "Error during request setup.";
+        }
+        setError(fetchError);
+        setArticles([]);
+        console.log("DEBUG: State update - setError and cleared articles due to fetch error.");
+      } finally {
+        setIsLoading(false);
+        console.log("DEBUG: Fetch attempt finished. Setting isLoading to false.");
+      }
+    };
+
+    fetchWellnessFeed();
+
+    return () => {
+      console.log("DEBUG: Home component unmounting.");
+    };
+  }, []);
+
+  console.log(`DEBUG: RENDERING Home component: isLoading=${isLoading}, error=${error}, articles count=${articles.length}`);
+
   return (
     <div className="home-outer-container">
-      {/* --- Hero Section --- */}
-      <motion.section
-        className="hero-section"
-        initial="hidden"
-        animate="visible"
-        variants={sectionVariants}
-      >
+      {/* --- Hero Section (No Motion) --- */}
+      <section className="hero-section"> {/* Removed motion + props */}
         <div className="container hero-content">
-          <motion.h1 variants={cardVariants}>Your Mental Wellness Journey Starts Here</motion.h1>
-          <motion.p className="subtitle" variants={cardVariants}>
-            Track your mood, connect with support, and discover tools tailored for your wellbeing.
-          </motion.p>
-          <motion.div variants={cardVariants}>
-             <Link to="/dashboard" className="aura-button primary large hero-button">
-                Go to Dashboard
-             </Link>
-          </motion.div>
-        </div>
-      </motion.section>
-
-      {/* --- Services Section --- */}
-      <motion.section
-        className="services-section"
-        initial="hidden"
-        whileInView="visible" // Animate when scrolled into view
-        viewport={{ once: true, amount: 0.2 }} // Trigger animation once, when 20% visible
-        variants={sectionVariants}
-      >
-        <div className="container">
-          <h2 className="section-title">Discover Your Tools for Wellbeing</h2>
-          <div className="service-cards-grid">
-            {/* Card 1: Dashboard */}
-            <motion.div className="aura-card service-card" variants={cardVariants}>
-                <div className="card-icon"><FiClipboard /></div>
-                <h3>Track Your Journey</h3>
-                <p>Monitor moods and journal thoughts on your personal dashboard.</p>
-                <Link to="/dashboard" className="aura-button secondary">My Dashboard</Link>
-            </motion.div>
-             {/* Card 2: AI Assistant */}
-            <motion.div className="aura-card service-card" variants={cardVariants}>
-                 <div className="card-icon"><FiMessageCircle /></div>
-                <h3>AI Assistant</h3>
-                <p>Get instant, confidential support and guidance anytime.</p>
-                <Link to="/chatbot" className="aura-button secondary">Start Chat</Link>
-            </motion.div>
-            {/* Card 3: Find Support */}
-            <motion.div className="aura-card service-card" variants={cardVariants}>
-                 <div className="card-icon"><FiMapPin /></div>
-                <h3>Find Support</h3>
-                <p>Locate nearby hospitals and clinics for professional help.</p>
-                <Link to="/find-doctor" className="aura-button secondary">Find Facilities</Link>
-            </motion.div>
-            {/* Card 4: Community (Example) */}
-             <motion.div className="aura-card service-card" variants={cardVariants}>
-                 <div className="card-icon"><FiUsers /></div>
-                <h3>Community Letters</h3>
-                <p>Share thoughts anonymously and connect with others.</p>
-                <Link to="/anonymous-letters" className="aura-button secondary">View Letters</Link>
-            </motion.div>
+          <h1>Your Mental Wellness Journey Starts Here</h1> {/* Removed motion + props */}
+          <p className="subtitle"> {/* Removed motion + props */}
+             Explore insights, track your progress, and find support tailored for you.
+          </p>
+          <div> {/* Removed motion + props */}
+             <Link to="/dashboard" className="aura-button primary large hero-button">Go to Dashboard</Link>
           </div>
         </div>
-      </motion.section>
+      </section>
 
-      {/* --- Testimonials Section (Example Structure) --- */}
-      <motion.section
-        className="testimonials-section"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
-        variants={sectionVariants}
-        >
+      {/* --- Wellness Feed Section (No Motion) --- */}
+      <section className="wellness-feed-section"> {/* Removed motion + props */}
         <div className="container">
-          <h2 className="section-title">What Our Users Say</h2>
-          <div className="testimonials-grid">
-            <motion.div className="testimonial-card" variants={cardVariants}>
-                <p className="testimonial-quote">"Tracking my mood has given me so much insight into my patterns. Highly recommend the dashboard feature!"</p>
-                <h4 className="testimonial-author">- Alex P.</h4>
-            </motion.div>
-            <motion.div className="testimonial-card" variants={cardVariants}>
-                <p className="testimonial-quote">"The AI chatbot offers great coping strategies when I'm feeling overwhelmed. It feels supportive and private."</p>
-                <h4 className="testimonial-author">- Sam K.</h4>
-            </motion.div>
-             <motion.div className="testimonial-card" variants={cardVariants}>
-                <p className="testimonial-quote">"Connecting with others anonymously made me feel less alone. A wonderful community feature."</p>
-                <h4 className="testimonial-author">- Jordan M.</h4>
-            </motion.div>
-          </div>
-        </div>
-      </motion.section>
+          <h2 className="section-title">
+            <FiBookOpen style={{ marginRight: '10px', verticalAlign: 'bottom' }} />
+            Wellness Insights & News
+          </h2>
 
-      {/* --- Call to Action Section --- */}
-      <motion.section
-        className="cta-section"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.3 }}
-        variants={sectionVariants}
-      >
+          {/* Loading State Display */}
+          {isLoading && <GlobalLoader message="Loading latest insights..." />}
+
+          {/* Error State Display */}
+          {!isLoading && error && <p className="error-message">{error}</p>}
+
+          {/* Content Display (Only when NOT loading and NO error) */}
+          {!isLoading && !error && (
+            <>
+              {articles.length > 0 ? (
+                <div className="news-cards-grid">
+                  {articles.map((article) => (
+                    <ArticleCard key={article.url || Math.random()} article={article} />
+                  ))}
+                </div>
+              ) : (
+                <p className="info-message">No wellness insights found at the moment. Please check back later!</p>
+              )}
+              <p className="api-attribution" style={{ textAlign: 'center', fontSize: '0.8rem', color: '#aaa', marginTop: '2rem' }}>
+                 {/* Optional Attribution */}
+              </p>
+            </>
+          )}
+        </div>
+      </section>
+      {/* --- End Wellness Feed Section --- */}
+
+      {/* --- Call to Action Section (No Motion) --- */}
+      <section className="cta-section"> {/* Removed motion + props */}
         <div className="container cta-content">
-          <motion.h2 variants={cardVariants}>Ready to Prioritize Your Mental Health?</motion.h2>
-          <motion.p className="subtitle" variants={cardVariants}>
-            Join MindWell today and take the first step towards a brighter wellbeing.
-          </motion.p>
-          <motion.div variants={cardVariants}>
-             {/* Link to Auth page if not logged in, Dashboard if logged in (App.js handles redirect) */}
-             <Link to="/dashboard" className="aura-button primary large cta-button">
-                Get Started Now
-             </Link>
-          </motion.div>
+          <h2>Ready to Prioritize Your Mental Health?</h2> {/* Removed motion + props */}
+          <p className="subtitle"> Join MindWell today. </p> {/* Removed motion + props */}
+          <div> {/* Removed motion + props */}
+             <Link to="/dashboard" className="aura-button primary large cta-button">Get Started Now</Link>
+          </div>
         </div>
-      </motion.section>
+      </section>
     </div>
   );
 };

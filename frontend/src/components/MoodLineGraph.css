@@ -1,0 +1,113 @@
+/* frontend/src/components/MoodLineGraph.css */
+
+/* Variables (Define these globally in index.css/App.css or replace) */
+:root {
+  --tooltip-bg: rgba(40, 40, 55, 0.9); /* Dark semi-transparent background */
+  --tooltip-text-color: #f0f0f0;      /* Light text color for tooltip */
+  --axis-color: #ccc;                 /* Color for axis lines */
+  --axis-text-color: #666;            /* Color for axis labels/ticks */
+  --line-color: var(--color-primary, #A0D2DB); /* Main line color (uses theme variable) */
+  --point-stroke-color: #ffffff;      /* Stroke color around data points */
+  --no-data-color: var(--color-text-light, #7a7e9a); /* Text color for 'no data' message */
+}
+
+.mood-line-graph-container {
+  position: relative;                 /* For absolute positioning of 'no-data-message' */
+  width: 100%;                        /* Take full width of its parent column */
+  max-width: 600px;                   /* Optional: Set a max-width if needed */
+  margin: 0 auto;                     /* Center if parent doesn't handle centering */
+  min-height: 220px;                  /* Ensure some height even when loading/empty */
+  display: flex;                      /* Use flexbox for centering the SVG */
+  justify-content: center;
+  align-items: center;
+}
+
+.mood-line-graph-container svg {
+  display: block;                     /* Remove extra space below SVG */
+  max-width: 100%;                    /* Ensure SVG scales down */
+  height: auto;                       /* Maintain aspect ratio */
+  overflow: visible;                  /* Allow rotated labels/tooltips to show */
+}
+
+/* Styling for the main mood trend line */
+.mood-line {
+  fill: none;                         /* Line should not be filled */
+  stroke: var(--line-color);          /* Use defined line color */
+  stroke-width: 2px;                  /* Thickness of the line */
+  stroke-linejoin: round;             /* Smoother joins between line segments */
+  stroke-linecap: round;              /* Smoother ends of the line */
+}
+
+/* Styling for the data points (circles) on the line */
+.mood-point {
+  stroke: var(--point-stroke-color);  /* Border color for points */
+  stroke-width: 1.5px;                /* Thickness of the border */
+  cursor: pointer;                    /* Indicate interactivity */
+  transition: r 0.1s ease-out;        /* Smooth radius change on hover */
+}
+
+/* Styling for the X and Y axes lines and ticks */
+.x-axis path, .y-axis path, /* The main axis lines */
+.x-axis line, .y-axis line { /* The tick lines */
+  stroke: var(--axis-color);          /* Use defined axis color */
+  shape-rendering: crispEdges;        /* Try to make lines sharp (pixel-perfect) */
+  stroke-opacity: 0.6;                /* Make axes slightly less prominent */
+}
+/* Remove the domain line for the Y axis if desired */
+.y-axis .domain {
+  display: none;
+}
+
+/* Styling for the text labels on the axes */
+.x-axis text, .y-axis text {
+  fill: var(--axis-text-color);       /* Use defined text color */
+  font-size: 0.75rem;                 /* Adjust label font size */
+  font-family: sans-serif;            /* Use a common sans-serif font */
+}
+
+/* Styling for the tooltip (reused from constellation, ensure consistency) */
+.mood-tooltip {
+  position: absolute;                 /* Crucial for positioning relative to page/mouse */
+  background-color: var(--tooltip-bg);
+  color: var(--tooltip-text-color);
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  opacity: 0;                         /* Start hidden */
+  transition: opacity 0.2s ease;      /* Smooth fade-in/out */
+  pointer-events: none;               /* Prevent tooltip from capturing mouse events */
+  white-space: normal;                /* Allow text wrapping inside tooltip */
+  max-width: 200px;                   /* Limit tooltip width */
+  z-index: 100;                       /* Ensure tooltip appears above chart elements */
+}
+
+.mood-tooltip strong {
+  font-weight: 600;
+  /* Color is set inline via JS based on mood */
+}
+
+.mood-tooltip hr {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.2); /* Subtle divider */
+  margin: 4px 0;
+}
+
+.mood-tooltip em {
+  font-style: italic;
+  color: #d0d0d0;                     /* Slightly lighter color for journal text */
+  display: block;                     /* Ensure journal text takes its own line */
+  font-size: 0.9em;
+}
+
+/* Message shown when no data is available */
+.no-data-message {
+  position: absolute;                 /* Position over the SVG area */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);   /* Center precisely */
+  color: var(--no-data-color);        /* Use defined text color */
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 1rem;                      /* Add some padding */
+}

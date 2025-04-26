@@ -1,0 +1,206 @@
+/* frontend/src/components/QuickReliefOverlay.css */
+
+:root {
+    /* Ensure these variables are accessible or define defaults */
+    --color-primary: #A0D2DB;
+    --color-primary-dark: #78aeb5;
+    --color-text-dark: #333;
+    --color-text: #555;
+    --color-text-light: #7a7e9a;
+    --color-success: #28a745; /* Green for completion */
+    --border-radius: 8px;
+    --card-border-color: #e0e4f0;
+}
+
+
+.quick-relief-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* background: set dynamically via style prop */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    color: var(--color-text-dark);
+    padding: 1rem; /* Reduce padding slightly */
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.overlay-content {
+    max-width: 550px; /* Slightly smaller */
+    width: 100%;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.65); /* Slightly less transparent */
+    padding: 2rem 2.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    position: relative;
+    backdrop-filter: blur(5px); /* Optional: Frosted glass effect */
+    -webkit-backdrop-filter: blur(5px);
+}
+
+.overlay-title {
+    font-size: 1.6rem; /* Adjusted size */
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+    color: var(--color-text-dark);
+}
+
+.steps-container {
+    margin-bottom: 1.5rem;
+    min-height: 80px; /* Adjusted height */
+}
+
+.step-instruction {
+    font-size: 1.05rem; /* Adjusted size */
+    line-height: 1.6;
+    margin-bottom: 0.8rem;
+    color: var(--color-text);
+}
+
+.step-counter {
+    font-size: 0.8rem; /* Adjusted size */
+    color: var(--color-text-light);
+    display: block;
+}
+
+.overlay-button {
+    padding: 0.7rem 1.6rem; /* Adjusted size */
+    font-size: 0.95rem; /* Adjusted size */
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 20px; /* Slightly less rounded */
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    font-weight: 500;
+    margin-top: 1rem; /* Add some top margin */
+}
+.overlay-button:hover {
+    background-color: var(--color-primary-dark);
+}
+.overlay-button:active {
+    transform: scale(0.98); /* Click feedback */
+}
+
+.overlay-close-button {
+    position: absolute;
+    top: 10px; /* Adjusted position */
+    right: 10px; /* Adjusted position */
+    background: rgba(255, 255, 255, 0.3); /* Make bg slightly visible */
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    font-size: 1.1rem; /* Icon size control */
+    cursor: pointer;
+    color: rgba(0, 0, 0, 0.5);
+    padding: 0;
+    line-height: 1;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+.overlay-close-button:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    color: rgba(0, 0, 0, 0.8);
+}
+
+/* Timer Styles */
+.simple-timer {
+    margin: 1.2rem 0;
+    font-size: 0.95rem; /* Adjusted size */
+    font-weight: 500;
+    color: var(--color-primary-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem; /* Space between icon and text */
+}
+.timer-icon {
+    font-size: 1.1em; /* Make icon slightly larger */
+}
+
+/* Audio Controls Styles */
+.audio-controls {
+    margin-top: 1.5rem; /* Reduced margin */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.8rem; /* Reduced gap */
+}
+
+.audio-controls button {
+    background: rgba(255, 255, 255, 0.6); /* Adjusted transparency */
+    border: 1px solid var(--card-border-color);
+    border-radius: 50%;
+    width: 36px; /* Adjusted size */
+    height: 36px; /* Adjusted size */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: var(--color-primary-dark);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.audio-controls button:hover {
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.audio-controls button svg {
+    width: 16px; /* Adjusted size */
+    height: 16px; /* Adjusted size */
+}
+
+/* Completion Message Styles */
+.completion-message-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 0;
+    min-height: 200px; /* Ensure it takes up space */
+}
+
+.completion-icon {
+    color: var(--color-success); /* Use a success color */
+    margin-bottom: 1rem;
+    width: 40px; /* Fixed size */
+    height: 40px; /* Fixed size */
+}
+
+.completion-message-container p {
+    font-size: 1.1rem;
+    color: var(--color-text-dark);
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .overlay-content {
+        padding: 1.5rem 1rem; /* Further reduce padding */
+    }
+    .overlay-title {
+        font-size: 1.4rem;
+    }
+    .step-instruction {
+        font-size: 1rem;
+    }
+     .overlay-button {
+        padding: 0.6rem 1.4rem;
+        font-size: 0.9rem;
+    }
+    .audio-controls {
+        gap: 0.6rem;
+    }
+     .audio-controls button {
+        width: 34px;
+        height: 34px;
+    }
+}
