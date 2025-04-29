@@ -2,17 +2,28 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css'; // Global base styles
-import App from './App'; // Your main App component
-//import reportWebVitals from './reportWebVitals';
+// Import AppWrapper if Router is defined within App.js
+// import AppWrapper from './App';
+// Import App directly if Router is defined here or outside App.js
+import App from './App';
+import './firebaseConfig'; // <-- IMPORT TO INITIALIZE FIREBASE (runs the code)
+import { AuthProvider } from './context/AuthContext';
+// Optional: If Router is NOT inside App.js or AppWrapper, add it here
+import { BrowserRouter as Router } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    {/* Router should generally wrap AuthProvider if not inside App */}
+    <Router>
+        <AuthProvider>
+             {/* <AppWrapper /> */} {/* Use if Router is inside App.js */}
+             <App />          {/* Use if Router is here or AppWrapper exists */}
+        </AuthProvider>
+    </Router>
   </React.StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-//reportWebVitals();
+// Remove or fix reportWebVitals if causing issues
+// import reportWebVitals from './reportWebVitals';
+// reportWebVitals();

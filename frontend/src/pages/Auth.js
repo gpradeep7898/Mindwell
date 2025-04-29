@@ -1,6 +1,6 @@
 // frontend/src/pages/Auth.js
 import React, { useState } from "react";
-import { auth } from "../services/firebaseConfig"; // Path to your firebase config
+import { auth } from "../firebaseConfig"; // Path to your firebase config
 import {
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,

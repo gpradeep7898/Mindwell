@@ -1,6 +1,6 @@
 // frontend/src/pages/Dashboard.js
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { auth, db } from "../services/firebaseConfig";
+import { auth, db } from "../firebaseConfig";
 import {
     collection,
     addDoc,

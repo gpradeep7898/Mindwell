@@ -1,110 +1,86 @@
 // frontend/src/App.js
+// Uses AuthContext for state, defines routing structure.
+
 import React from "react";
 import {
-    BrowserRouter as Router,
+    // BrowserRouter as Router, // Removed Router from here, assumed to be in index.js
     Route,
     Routes,
-    Navigate
+    Navigate,
+    useLocation
 } from "react-router-dom";
-import { useAuthState } from "react-firebase-hooks/auth";
 
-// Import Pages
+// Pages
 import Home from "./pages/Home";
 import FindDoctor from "./pages/FindDoctor";
-import ChatBot from "./pages/Chatbot"; // Check filename consistency if needed
+import ChatBot from "./pages/Chatbot";
 import AuthPage from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import AnonymousLetters from "./pages/AnonymousLetters";
 import QuickRelief from "./pages/QuickRelief";
 import WellnessStore from "./pages/WellnessStore";
 
-// Import Components
+// Components
 import Sidebar from "./components/Sidebar";
 import GlobalLoader from "./components/GlobalLoader";
+import { AnimatePresence } from 'framer-motion';
 
-// Import Services & Styles
-import { auth as firebaseAuth } from "./services/firebaseConfig";
+// Context & Styles
+import { useAuth } from "./context/AuthContext"; // <<< Use AuthContext hook
 import "./App.css";
 
-// --- Modified Protected Route Component ---
-// Accepts auth status as props instead of using the hook internally
+// --- Protected Route Component ---
 function ProtectedRoute({ children, isAuthenticated, isLoading }) {
-
-    // Show loader based on the App component's INITIAL loading state passed down
-    // We rely on App component to handle the initial load screen
-    // This check here might be redundant if App already shows loader,
-    // but can serve as a fallback. Consider if needed.
-    // if (isLoading) {
-    //     return <GlobalLoader message="Initializing..." />;
-    // }
-
-    // If initial loading is done and user is NOT authenticated, redirect to login
+    // Redirect to auth if context is done loading and user is not authenticated
     if (!isLoading && !isAuthenticated) {
-        // console.log("ProtectedRoute: Not authenticated, navigating to /auth"); // Debug log
         return <Navigate to="/auth" replace />;
     }
-
-    // If initial loading is done and user IS authenticated, render the protected content
+    // Render children if context is done loading and user is authenticated
     if (!isLoading && isAuthenticated) {
         return children;
     }
-
-    // Return null or a loader while waiting for initial App loading state determination
-    // If the parent App handles the main initial load, this might not be strictly necessary,
-    // but returning null prevents rendering children prematurely.
-    return <GlobalLoader message="Checking authentication..." />; // Or return null;
+    // Show loader while context is initially loading auth state
+    // This loader might flash briefly. Consider styling or removing if jarring.
+    return <GlobalLoader message="Verifying session..." />;
 }
 
 
 // --- Main App Component ---
 function App() {
-    // Use useAuthState hook ONCE here in the main App component
-    const [user, loading, authError] = useAuthState(firebaseAuth);
+    // Get state from AuthContext
+    const { currentUser, loading } = useAuth(); // <<< Use context state
 
-    // Derive boolean authentication status from user object
-    const isAuthenticated = !!user; // True if user object exists, false otherwise
+    // Derive boolean auth status
+    const isAuthenticated = !!currentUser;
 
-    // Handle INITIAL app loading state (while firebase checks auth status)
-    if (loading) {
-         // Show a full-page loader during this initial check
-         return <GlobalLoader message="Initializing MindWell..." />;
-    }
+    // Location for AnimatePresence
+    const location = useLocation(); // Requires Router context from parent (index.js)
 
-    // Handle initial Firebase auth hook errors (e.g., connection issues)
-    if (authError && !loading) { // Make sure loading is false before declaring error
-        console.error("Initial Firebase Auth Hook Error:", authError);
-        return (
-            // Provide basic structure even for errors
-            <Router>
-                <div className="app-container">
-                    <main className="content-container" style={{ width: '100%', paddingLeft: 0 }}>
-                       <GlobalLoader message="Authentication error. Please try refreshing." />
-                       {/* Consider adding a button to try logging in again */}
-                    </main>
-                </div>
-            </Router>
-        );
-    }
+    // --- Initial Loading State (Handled by AuthProvider) ---
+    // The AuthProvider prevents rendering children until loading is false,
+    // so we don't need the explicit loading check here anymore.
+    // if (loading) {
+    //      return <GlobalLoader message="Initializing MindWell..." />;
+    // }
 
-    // --- Render the main application structure ---
     return (
-        <Router>
-            <div className="app-container">
-                {/* Sidebar: Conditionally render based on the derived isAuthenticated status */}
-                {isAuthenticated && <Sidebar />}
+        // Router removed from here, assuming it's in index.js now
+        <div className="app-container">
+            {/* Sidebar: Render only if authenticated */}
+            {/* Ensure Sidebar component correctly uses useAuth if needed */}
+            {isAuthenticated && <Sidebar />}
 
-                {/* Main Content Area: Adjust class based on auth status */}
-                <main className={`content-container ${isAuthenticated ? 'content-shifted' : ''}`}>
-                    <Routes>
-                         {/* Public Route: Authentication Page */}
-                         {/* Redirect logged-in users away from /auth */}
+            {/* Main Content Area */}
+            <main className={`content-container ${isAuthenticated ? 'content-shifted' : ''}`}>
+                <AnimatePresence mode="wait">
+                    <Routes location={location} key={location.pathname}>
+                        {/* Public Route: Auth Page */}
                         <Route
                             path="/auth"
-                            element={isAuthenticated ? <Navigate to="/" replace /> : <AuthPage />}
+                            element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <AuthPage />} // Redirect to dashboard on login
                         />
 
-                        {/* Protected Routes: Wrap element with ProtectedRoute and pass props */}
-                        {/* Pass the loading status AND the derived isAuthenticated status */}
+                        {/* Protected Routes: Use context state */}
                         <Route
                             path="/"
                             element={<ProtectedRoute isAuthenticated={isAuthenticated} isLoading={loading}><Home /></ProtectedRoute>}
@@ -117,8 +93,8 @@ function App() {
                             path="/find-doctor"
                             element={<ProtectedRoute isAuthenticated={isAuthenticated} isLoading={loading}><FindDoctor /></ProtectedRoute>}
                         />
-                        <Route
-                            path="/chatbot"
+                         <Route
+                            path="/chatbot" // Path for AI Assistant
                             element={<ProtectedRoute isAuthenticated={isAuthenticated} isLoading={loading}><ChatBot /></ProtectedRoute>}
                         />
                         <Route
@@ -129,21 +105,23 @@ function App() {
                             path="/quick-relief"
                             element={<ProtectedRoute isAuthenticated={isAuthenticated} isLoading={loading}><QuickRelief /></ProtectedRoute>}
                         />
-                        <Route
+                         <Route
                             path="/wellness-store"
                             element={<ProtectedRoute isAuthenticated={isAuthenticated} isLoading={loading}><WellnessStore /></ProtectedRoute>}
                         />
 
-                        {/* Fallback Route: Redirect everything else */}
+                        {/* Fallback Route */}
                         <Route
                             path="*"
-                            element={<Navigate to={isAuthenticated ? "/" : "/auth"} replace />}
+                            // Redirect to dashboard if logged in, auth page if not
+                            element={<Navigate to={isAuthenticated ? "/dashboard" : "/auth"} replace />}
                         />
                     </Routes>
-                </main>
-            </div>
-        </Router>
+                </AnimatePresence>
+            </main>
+        </div>
     );
 }
 
+// Export App directly as Router is likely moved to index.js
 export default App;

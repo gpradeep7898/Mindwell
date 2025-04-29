@@ -1,183 +1,237 @@
 // frontend/src/components/AIChatAssistant.js
-// Handles the AI Chat UI and logic.
-// !! No changes needed here to switch backend from OpenAI to Gemini !!
-// It interacts with the consistent /api/ai-chat endpoint.
+// Final Version: Includes Firebase Auth ID Token in API requests.
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FiSend, FiMessageSquare, FiLoader, FiAlertTriangle } from 'react-icons/fi';
-import './AIChatAssistant.css'; // Ensure this CSS file exists and is styled
+import { motion, AnimatePresence } from 'framer-motion'; // For animations
+import { FiSend, FiMessageSquare, FiLoader, FiAlertTriangle } from 'react-icons/fi'; // Icons
+
+// --- Import your custom authentication hook ---
+// Verify this path points to your actual AuthContext file
+import { useAuth } from '../context/AuthContext';
+
+// --- Import component-specific styles ---
+import './AIChatAssistant.css';
 
 const AIChatAssistant = () => {
-    // State for messages: Array of { sender: 'user' | 'ai', text: string, isError?: boolean }
+    // --- State Variables ---
+    // Stores the conversation history
     const [messages, setMessages] = useState([
-        // Initial welcome message (can be adjusted)
-        { sender: 'ai', text: 'Hello! I am the MindWell Assistant, powered by advanced AI. How can I help you with your well-being today?' }
+        // Initial greeting from the AI
+        { sender: 'ai', text: 'Hello! I am the MindWell Assistant. How can I support your well-being today? Feel free to ask questions or just chat.' }
     ]);
-    // State for the text input field
+    // Stores the current value of the text input field
     const [inputValue, setInputValue] = useState('');
-    // State to track if the AI is currently responding
+    // Tracks if the component is waiting for a response from the backend
     const [isLoading, setIsLoading] = useState(false);
-    // State to hold any general error messages from the API call (optional display)
-    const [error, setError] = useState(null);
+    // Unused 'error' state removed based on previous refinement
 
-    // Ref to the bottom of the message list for auto-scrolling
+    // --- Refs ---
+    // Ref attached to the bottom of the message list for auto-scrolling
     const messagesEndRef = useRef(null);
 
-    // Function to scroll the message list to the bottom smoothly
+    // --- Get Authentication State ---
+    // Uses the custom hook to access the current user object from context.
+    // 'user' will be the Firebase Auth user object if logged in, otherwise null.
+    const { currentUser: user } = useAuth(); // Renamed currentUser to user for internal consistency
+
+    // --- Debugging Log ---
+    // Logs the user state whenever it changes. Helps verify context is working.
+    useEffect(() => {
+        console.log("AIChatAssistant - Current User from useAuth:", user);
+    }, [user]);
+
+    // --- Auto-Scrolling Logic ---
+    // Function to scroll the chat window to the bottom
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
-
-    // Effect to scroll down whenever the messages array changes
+    // Effect that triggers scrolling whenever the messages array updates
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
 
-    // Function to handle sending a message (triggered by form submission or Enter key)
+    // --- Send Message Handler ---
+    // useCallback memoizes the function to prevent unnecessary re-creations
     const handleSendMessage = useCallback(async (e) => {
-        if (e) e.preventDefault(); // Prevent default form submission if event exists
+        // Prevent default form submission if triggered by form's onSubmit
+        if (e) e.preventDefault();
 
-        const userMessageText = inputValue.trim();
-        // Don't proceed if the message is empty or currently loading
+        const userMessageText = inputValue.trim(); // Get trimmed message text
+        // Exit early if message is empty or already waiting for a response
         if (!userMessageText || isLoading) return;
 
-        // --- Frontend Update (Optimistic UI) ---
+        // --- Authentication Check ---
+        // Verify user is logged in before proceeding
+        if (!user) {
+             console.error("AIChat Error: Attempted to send message while not authenticated.");
+             // Add an error message to the UI and stop
+             setMessages(prev => [...prev, {
+                 sender: 'ai',
+                 text: 'Error: Please log in to use the AI Assistant.',
+                 isError: true
+                }]);
+             return; // Do not proceed with API call
+        }
+
+        // --- Optimistic UI Update ---
+        // Add the user's message to the chat immediately for responsiveness
         const newUserMessage = { sender: 'user', text: userMessageText };
-        setMessages(prevMessages => [...prevMessages, newUserMessage]); // Add user message
-        setInputValue(''); // Clear the input field
-        setIsLoading(true); // Show loading indicator
-        setError(null); // Clear previous general errors
+        setMessages(prevMessages => [...prevMessages, newUserMessage]);
+        setInputValue(''); // Clear the text input field
+        setIsLoading(true); // Set loading state to true (shows spinner, disables input)
 
-        // --- Backend API Call ---
+        // --- API Call to Backend ---
         try {
-            // Construct the backend API endpoint URL
-            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8081'; // Use env variable or fallback
-            const endpoint = `${apiUrl}/api/ai-chat`; // Consistent endpoint
+            // --- Get Firebase ID Token ---
+            // Fetch the latest token to authenticate the request to *your* backend
+            const idToken = await user.getIdToken();
 
-            // Make the POST request to YOUR backend
-            const response = await axios.post(endpoint, {
-                message: userMessageText // Send the user's message
-            });
+            // Determine the backend API endpoint URL
+            const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8081'; // Use .env variable or default
+            const endpoint = `${apiUrl}/api/ai-chat`;
 
-            // Extract the AI's response text from YOUR backend's response
+            // --- Make the POST request using Axios ---
+            const response = await axios.post(
+                endpoint, // Your backend URL
+                { message: userMessageText }, // Data payload (user's message)
+                { // Axios config object
+                    headers: {
+                        // Include the authentication token in the Authorization header
+                        'Authorization': `Bearer ${idToken}`
+                    }
+                }
+            );
+
+            // Extract the AI's response text from your backend's response structure
             const aiResponseText = response.data?.response;
 
             // Validate the response
             if (aiResponseText && typeof aiResponseText === 'string') {
+                // Create the AI message object
                 const newAiMessage = { sender: 'ai', text: aiResponseText };
-                // Add the AI's message to the state
+                // Add the valid AI response to the chat messages state
                 setMessages(prevMessages => [...prevMessages, newAiMessage]);
             } else {
-                // Handle cases where the response structure from *your* backend is unexpected
+                // Handle if the backend response format is not as expected
                 console.error("Received unexpected response format from backend:", response.data);
-                throw new Error("Sorry, I received an unusual response. Please try again.");
+                throw new Error("Sorry, I received an incomplete or unusual response from the server.");
             }
 
         } catch (err) {
-            // Handle errors during the API call to *your* backend
+            // --- Error Handling ---
             console.error("Error sending message to AI backend:", err);
-            // Determine the error message to display
-            const errorMessage = err.response?.data?.error || // Prefer backend error message
-                                 err.message || // Fallback to Axios error message
-                                 'Sorry, I encountered an error connecting to the assistant. Please check your connection or try again later.';
-            setError(errorMessage); // Set general error state (optional display)
-            // Add a specific error message directly into the chat flow
+            let displayErrorMessage; // Variable to hold user-facing error message
+
+            // Check for specific authentication errors (401 Unauthorized, 403 Forbidden)
+            if (err.response?.status === 401 || err.response?.status === 403) {
+                displayErrorMessage = `Authentication failed (${err.response.status}). Your session may be invalid or expired. Please try logging out and logging back in.`;
+            } else {
+                 // Handle other errors (e.g., 500 Internal Server Error from backend, network issues)
+                // Prioritize specific error message from backend if available
+                displayErrorMessage = err.response?.data?.error
+                                     || err.message // Fallback to Axios/network error message
+                                     || 'Sorry, an unexpected error occurred while connecting to the assistant.';
+            }
+            // Add the error message directly to the chat interface for the user to see
             setMessages(prevMessages => [...prevMessages, {
-                sender: 'ai', // Show error as if it's from the AI system
-                text: `Error: ${errorMessage}`,
-                isError: true // Flag for specific styling
+                sender: 'ai',
+                text: `Error: ${displayErrorMessage}`,
+                isError: true // Flag for specific error styling
             }]);
         } finally {
             // --- End Loading State ---
-            setIsLoading(false); // Hide loading indicator regardless of success/failure
+            // Ensure the loading indicator is turned off regardless of success or failure
+            setIsLoading(false);
         }
-    }, [inputValue, isLoading]); // Dependencies
+    // Dependencies for useCallback: Ensure the function has access to the latest state/props it needs
+    }, [inputValue, isLoading, user]); // Depends on input value, loading state, and user object
 
-    // Framer Motion variants for messages
+    // --- Framer Motion Animation Variants ---
     const messageVariants = {
         hidden: { opacity: 0, y: 10 },
-        visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: "easeOut" } },
     };
 
+    // --- Render JSX ---
     return (
         <div className="ai-chat-container">
-            {/* Chat Header */}
+           {/* Chat Header */}
             <div className="chat-header">
-                <FiMessageSquare aria-hidden="true"/> MindWell AI Assistant
+                 <FiMessageSquare aria-hidden="true" style={{ marginRight: '8px' }}/> {/* Added margin */}
+                 MindWell AI Assistant
             </div>
 
             {/* Message Display Area */}
             <div className="chat-messages">
+                {/* AnimatePresence helps manage animations when items are added/removed */}
                 <AnimatePresence initial={false}>
                     {messages.map((msg, index) => (
                         <motion.div
-                            key={index} // Consider more stable keys if messages can be deleted/reordered
+                            key={index} // Using index as key; consider more stable IDs in production
                             className={`message ${msg.sender === 'user' ? 'user-message' : 'ai-message'} ${msg.isError ? 'error-message' : ''}`}
                             variants={messageVariants}
                             initial="hidden"
                             animate="visible"
-                            layout // Smooth layout animations
+                            layout // Animates layout changes smoothly (e.g., when new messages push others)
                         >
-                           {/* Render text, handling errors and newlines */}
-                           {msg.isError && <FiAlertTriangle style={{ marginRight: '0.3em', verticalAlign: 'bottom' }} aria-hidden="true"/>}
-                           {msg.text.split('\n').map((line, i) => <p key={i}>{line || '\u00A0'}</p>)} {/* Render empty lines */}
+                           {/* Display error icon if message has isError flag */}
+                           {msg.isError && <FiAlertTriangle style={{ marginRight: '0.4em', verticalAlign: 'middle', display: 'inline-block' }} aria-hidden="true"/>}
+                           {/* Split message by newline characters and render each line as a paragraph */}
+                           {/* Render non-breaking space for empty lines to maintain spacing */}
+                           {msg.text.split('\n').map((line, i) => <p key={i}>{line || '\u00A0'}</p>)}
                         </motion.div>
                     ))}
                 </AnimatePresence>
 
-                {/* Loading Indicator */}
+                {/* Loading Indicator (shown while waiting for AI response) */}
                 {isLoading && (
                     <motion.div
                         className="message ai-message loading-indicator"
-                        variants={messageVariants}
-                        initial="hidden"
-                        animate="visible"
-                        layout
-                    >
+                        variants={messageVariants} initial="hidden" animate="visible" layout >
                         <FiLoader className="spinner" aria-hidden="true"/> Thinking...
                     </motion.div>
                 )}
-
-                {/* Empty div used as a target for auto-scrolling */}
+                {/* Empty div at the end: target for auto-scrolling */}
                 <div ref={messagesEndRef} />
-            </div>
+             </div>
 
-             {/* Optional: Display general fetch error outside the chat flow */}
-             {/* {error && !isLoading && <div className="chat-error-banner">{error}</div>} */}
-
-            {/* Input Form */}
+            {/* Input Form Area */}
             <form className="chat-input-form" onSubmit={handleSendMessage}>
-                <input
+                 <input
                     type="text"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
-                    placeholder="Ask about wellness or just chat..."
+                    // Display appropriate placeholder based on login status
+                    placeholder={user ? "Ask about wellness or just chat..." : "Please log in to chat"}
                     aria-label="Chat input"
-                    disabled={isLoading} // Disable input while AI is processing
-                    onKeyPress={(e) => { // Allow sending with Enter key (but not Shift+Enter)
+                    // Disable input field if loading response OR if user is not logged in
+                    disabled={isLoading || !user}
+                    // Allow sending message by pressing Enter key (but not Shift+Enter)
+                    onKeyPress={(e) => {
                         if (e.key === 'Enter' && !e.shiftKey) {
-                            handleSendMessage(e);
+                            handleSendMessage(e); // Trigger send on Enter press
                         }
                     }}
                 />
                 <button
                     type="submit"
-                    disabled={isLoading || !inputValue.trim()} // Disable if loading or input is empty/whitespace
+                    // Disable button if loading OR input is empty/whitespace OR user is not logged in
+                    disabled={isLoading || !inputValue.trim() || !user}
                     aria-label="Send message"
+                    title="Send message" // Tooltip for accessibility
                 >
-                    {/* Show loader icon in button when loading */}
+                    {/* Show spinner icon inside button when loading */}
                     {isLoading ? <FiLoader className="spinner-inline" /> : <FiSend />}
-                </button>
+                 </button>
             </form>
 
             {/* Disclaimer Text */}
-            <p className="chat-disclaimer">
+             <p className="chat-disclaimer">
                 MindWell Assistant is an AI and cannot provide medical advice or emergency support. It's not a replacement for professional help. If you are in crisis, please contact emergency services.
-            </p>
-        </div>
-    );
-};
+             </p>
+         </div>
+     );
+ };
 
 export default AIChatAssistant;
