@@ -1,72 +1,79 @@
+// frontend/src/utils/quickReliefProtocols.js
+// Defines the data for each relief exercise, including background images.
+
+// --- Import Background Images ---
+// Adjust paths if your assets folder is located differently relative to this utils folder
+import panicBackground from '../assets/soothing1.jpeg';
+import anxiousBackground from '../assets/soothing2.webp';
+import overwhelmBackground from '../assets/soothing3.jpg';
+// Consider importing a default background if needed for future protocols
+// import defaultBackground from '../assets/default-calm.jpg';
+
+// --- Define Protocol Data ---
 export const reliefProtocols = {
+    // Key 'panic' MUST match the string used in QuickRelief.js onClick
     panic: {
+        id: 'panic',
         name: "Panic Grounding Sequence",
-        description: "Focus on your senses to anchor yourself in the present moment during intense panic.",
+        description: "Grounding exercise using your senses to anchor you during intense panic.",
+        themeGradient: 'linear-gradient(to bottom, #f8d7da, #f5e6e8)', // Optional: Fallback gradient for overlay card
+        musicFile: '/audio/audio1.mp3', // Path relative to PUBLIC folder
+        backgroundImage: panicBackground, // <<< Image imported and assigned here
+        completionMessage: "You've completed the grounding sequence. Take a deep breath.",
         steps: [
-            { text: "Acknowledge the feeling without judgment. Say: 'I am feeling panic, and it will pass.'", duration: 8000 },
-            { text: "Plant your feet firmly on the ground. Feel the support beneath you.", duration: 10000 },
-            { text: "Take a slow breath in through your nose (count 4)...", duration: 6000 },
-            { text: "...hold gently (count 2)...", duration: 4000 },
-            { text: "...then breathe out slowly through your mouth (count 6).", duration: 8000 },
-            { text: "Repeat the breath: In (4)... Hold (2)... Out (6)...", duration: 12000 },
-            { text: "Look around. Name 5 things you can SEE.", duration: 15000 },
-            { text: "Listen closely. Name 4 sounds you can HEAR.", duration: 15000 },
-            { text: "Notice physical sensations. Name 3 things you can FEEL (clothes, chair, air).", duration: 15000 },
-            { text: "Identify 2 things you can SMELL (or imagine pleasant smells).", duration: 12000 },
-            { text: "Identify 1 thing you can TASTE (or recall a pleasant taste).", duration: 10000 },
-            { text: "Take another slow, deep breath. Notice the feeling easing.", duration: 10000 },
-            { text: "You are safe. This feeling is temporary and it is passing.", duration: 8000 },
-        ],
-        // --- Added Enhancements ---
-        musicFile: '/audio/audio1.mp3', // Path relative to /public
-        themeGradient: 'linear-gradient(to bottom, #BBD2E1, #F0EBE8)', // Adjusted softer blue/beige
-        completionMessage: "You've anchored yourself in the present. Well done."
+             { text: "Acknowledge the feeling without judgment. Say: 'I am feeling panic, and it will pass.'", duration: 8000 },
+             { text: "Name 5 things you can SEE around you. Look closely at each item.", duration: 15000 },
+             { text: "Name 4 things you can TOUCH. Feel their texture.", duration: 12000 },
+             { text: "Name 3 things you can HEAR right now. Listen carefully.", duration: 10000 },
+             { text: "Name 2 things you can SMELL. If nothing strong, imagine a favorite scent.", duration: 8000 },
+             { text: "Name 1 thing you can TASTE. Perhaps take a sip of water.", duration: 8000 },
+             { text: "Focus on your breath. Feel your feet on the ground.", duration: 10000 },
+        ]
     },
+    // Key 'highAnxiety' MUST match the string used in QuickRelief.js onClick
     highAnxiety: {
-        name: "Anxiety Breathing Space",
+        id: 'highAnxiety',
+        name: "Breathing Space",
         description: "Use controlled breathing to gently calm your nervous system when highly anxious.",
+        themeGradient: 'linear-gradient(to bottom, #cce5ff, #e6f0ff)',
+        musicFile: '/audio/audio2.mp3', // Path relative to PUBLIC folder
+        backgroundImage: anxiousBackground, // <<< Image imported and assigned here
+        completionMessage: "You've created space with your breath. Carry this calm forward.",
         steps: [
-            { text: "Find a comfortable position, sitting or lying down.", duration: 6000 },
-            { text: "Place one hand on your chest, the other on your belly.", duration: 6000 },
-            { text: "Breathe in slowly through your nose, feeling your belly rise gently.", duration: 7000 },
-            { text: "Breathe out slowly through pursed lips, as if blowing out a candle softly.", duration: 8000 },
-            { text: "Focus completely on the gentle rhythm of your breath.", duration: 10000 },
-            { text: "If your mind wanders, kindly bring your attention back to the breath.", duration: 10000 },
-            { text: "Feel the calm deepening with each exhale.", duration: 10000 },
-            { text: "Continue this smooth, gentle breathing.", duration: 15000 },
-            { text: "Notice the feeling of quiet settling within you.", duration: 8000 },
-        ],
-         // --- Added Enhancements ---
-        musicFile: '/audio/audio2.mp3', // Path relative to /public
-        themeGradient: 'linear-gradient(to bottom, #C1E1C1, #F5FDF5)', // Soft green gradient
-        completionMessage: "Your nervous system is calmer. Carry this peace."
+            { text: "Notice your current feeling and thoughts without judgment.", duration: 8000 },
+            { text: "Bring your awareness fully to your breath. Feel the rise and fall.", duration: 10000 },
+            { text: "Breathe IN slowly through your nose, counting to 4.", duration: 5000 },
+            { text: "Breathe OUT slowly through your mouth or nose, counting to 6.", duration: 7000 },
+            { text: "Continue this rhythm: Inhale 4, Exhale 6.", duration: 12000 },
+            { text: "Expand your awareness gently to your whole body sitting here.", duration: 10000 },
+            { text: "When ready, gently open your eyes, carrying this awareness.", duration: 8000 },
+        ]
     },
+    // Key 'overwhelm' MUST match the string used in QuickRelief.js onClick
     overwhelm: {
-        name: "Moment of Pause & Reset",
+        id: 'overwhelm',
+        name: "Take a Pause",
         description: "Create a brief, intentional space to step back and reset when feeling overwhelmed.",
-         steps: [
-            { text: "Pause. Stop what you are doing for just this moment.", duration: 5000 },
-            { text: "Take three slow, deliberate breaths. Inhale calm... Exhale chaos...", duration: 15000 },
-            { text: "Ask yourself kindly: 'What is ONE small, manageable step I can take next?'", duration: 12000 },
-            { text: "If no step is needed right now, simply rest in this pause.", duration: 8000 },
-            { text: "Gently roll your shoulders or stretch your neck if it feels good.", duration: 10000 },
-            { text: "Acknowledge the feeling without judgment. 'It's okay to feel overwhelmed.'", duration: 7000 },
-            { text: "Take one more deep, centering breath before you continue.", duration: 8000 },
-        ],
-         // --- Added Enhancements ---
-        musicFile: '/audio/audio3.mp3', // Path relative to /public
-        themeGradient: 'linear-gradient(to bottom, #D8BFD8, #FDF8FD)', // Soft lavender gradient
-        completionMessage: "You created space. You can proceed more calmly now."
+        themeGradient: 'linear-gradient(to bottom, #d4edda, #eaf6ec)',
+        musicFile: '/audio/audio3.mp3', // Path relative to PUBLIC folder
+        backgroundImage: overwhelmBackground, // <<< Image imported and assigned here
+        completionMessage: "You took a moment to pause and reset. Well done.",
+        steps: [
+             { text: "Stop what you are doing for a moment.", duration: 5000 },
+             { text: "Find a comfortable sitting or standing position.", duration: 7000 },
+             { text: "If comfortable, close your eyes gently or lower your gaze.", duration: 5000 },
+             { text: "Take three slow, deep breaths, noticing the air.", duration: 15000 },
+             { text: "Ask yourself gently: 'What is truly needed right now?'", duration: 10000 },
+             { text: "Acknowledge the feeling of overwhelm, letting it be there for a moment.", duration: 8000 },
+             { text: "Intentionally relax your shoulders, jaw, and the space between your eyebrows.", duration: 10000 },
+             { text: "When ready, slowly return your attention to your surroundings.", duration: 7000 },
+        ]
     }
     // Add more protocols here following the same structure
 };
 
-/**
- * Helper function to safely get a specific protocol object by name.
- * @param {string} protocolName - The key of the protocol (e.g., 'panic', 'highAnxiety').
- * @returns {object | null} The protocol object or null if not found.
- */
+// --- Function to get a specific protocol object by its key ---
 export const getReliefProtocol = (protocolName) => {
-    // Check if the protocol exists before returning
-    return reliefProtocols.hasOwnProperty(protocolName) ? reliefProtocols[protocolName] : null;
+    // Returns the object (including backgroundImage) or null if the key doesn't exist
+    return reliefProtocols[protocolName] || null;
 };

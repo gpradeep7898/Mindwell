@@ -19,7 +19,7 @@ import Dashboard from "./pages/Dashboard";
 import AnonymousLetters from "./pages/AnonymousLetters";
 import QuickRelief from "./pages/QuickRelief";
 import WellnessStore from "./pages/WellnessStore";
-
+import AccountSettings from './pages/AccountSettings'; 
 // Components
 import Sidebar from "./components/Sidebar";
 import GlobalLoader from "./components/GlobalLoader";
@@ -50,18 +50,9 @@ function App() {
     // Get state from AuthContext
     const { currentUser, loading } = useAuth(); // <<< Use context state
 
-    // Derive boolean auth status
     const isAuthenticated = !!currentUser;
 
-    // Location for AnimatePresence
-    const location = useLocation(); // Requires Router context from parent (index.js)
-
-    // --- Initial Loading State (Handled by AuthProvider) ---
-    // The AuthProvider prevents rendering children until loading is false,
-    // so we don't need the explicit loading check here anymore.
-    // if (loading) {
-    //      return <GlobalLoader message="Initializing MindWell..." />;
-    // }
+    const location = useLocation(); 
 
     return (
         // Router removed from here, assuming it's in index.js now
@@ -109,7 +100,10 @@ function App() {
                             path="/wellness-store"
                             element={<ProtectedRoute isAuthenticated={isAuthenticated} isLoading={loading}><WellnessStore /></ProtectedRoute>}
                         />
-
+                        <Route
+                            path="/account-settings" 
+                            element={<ProtectedRoute isAuthenticated={isAuthenticated} isLoading={loading}><AccountSettings /></ProtectedRoute>}
+                        />
                         {/* Fallback Route */}
                         <Route
                             path="*"

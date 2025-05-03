@@ -1,0 +1,126 @@
+/* src/pages/QuickRelief.module.css */
+.quickReliefContainer {
+    padding: 3rem 2rem;
+    max-width: 900px;
+    margin: 2rem auto;
+    background-color: #fff; /* Or your page background color */
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    color: #333;
+}
+
+.headerIcon {
+    font-size: 2.5rem;
+    color: #A0D2DB; /* Example primary color */
+    margin-bottom: 0.5rem;
+}
+
+.header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.header p {
+    font-size: 1rem;
+    color: #555;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.optionsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Responsive grid */
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+}
+
+.optionCard {
+    background-color: #f8f9fa; /* Light background for cards */
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1.8rem 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.optionCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.cardIcon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.optionCard h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    color: #343a40;
+}
+
+.optionCard p {
+    font-size: 0.9rem;
+    color: #6c757d;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    flex-grow: 1; /* Makes text take available space */
+}
+
+.startButton {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #fff;
+    background-color: #A0D2DB; /* Primary color */
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.startButton:hover {
+    background-color: #78aeb5; /* Darker primary */
+}
+
+.disclaimer {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-top: 2rem;
+    line-height: 1.4;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .quickReliefContainer {
+        padding: 2rem 1rem;
+        margin: 1rem;
+    }
+    .optionsGrid {
+        grid-template-columns: 1fr; /* Stack cards on smaller screens */
+        gap: 1.5rem;
+    }
+     .header h1 {
+        font-size: 1.8rem;
+    }
+    .header p {
+        font-size: 0.95rem;
+    }
+}

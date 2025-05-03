@@ -19,47 +19,56 @@
     left: 0;
     width: 100%;
     height: 100%;
-    /* background: set dynamically via style prop */
+    /* background: REMOVE any hardcoded background/background-image here */
+    /* background-image: none; <--- REMOVE THIS TOO */
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 1000; /* High z-index to appear on top */
     color: var(--color-text-dark);
-    padding: 1rem; /* Reduce padding slightly */
+    padding: 1rem;
     box-sizing: border-box;
-    overflow-y: auto;
+    overflow-y: auto; /* Allow scrolling if content is too tall */
+
+    /* --- THESE ARE NEEDED FOR THE INLINE background-image TO WORK WELL --- */
+    background-size: cover;        /* Scale the image to cover the entire area */
+    background-position: center center; /* Center the image */
+    background-repeat: no-repeat; /* Do not tile the image */
+    /* Optional: Add a subtle transition if the background image changes */
+    /* transition: background-image 0.5s ease-in-out; */
 }
 
+/* Ensure the overlay content box has its own background so text is readable */
 .overlay-content {
-    max-width: 550px; /* Slightly smaller */
+    max-width: 550px;
     width: 100%;
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.65); /* Slightly less transparent */
+    /* --- ADJUSTED --- */
+    background-color: rgba(255, 255, 255, 0.65); /* Keep original opacity or adjust slightly */
+    backdrop-filter: blur(15px); /* Increase blur significantly */
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.15); /* Optional light border */
+     /* --- END ADJUSTED --- */
     padding: 2rem 2.5rem;
     border-radius: var(--border-radius);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     position: relative;
-    backdrop-filter: blur(5px); /* Optional: Frosted glass effect */
-    -webkit-backdrop-filter: blur(5px);
+    z-index: 2;
 }
 
+/* Ensure text colors have good contrast */
 .overlay-title {
-    font-size: 1.6rem; /* Adjusted size */
+    font-size: 1.6rem;
     font-weight: 600;
     margin-bottom: 1.2rem;
-    color: var(--color-text-dark);
-}
-
-.steps-container {
-    margin-bottom: 1.5rem;
-    min-height: 80px; /* Adjusted height */
+    color: #333; /* Ensure dark enough */
 }
 
 .step-instruction {
-    font-size: 1.05rem; /* Adjusted size */
+    font-size: 1.05rem;
     line-height: 1.6;
     margin-bottom: 0.8rem;
-    color: var(--color-text);
+    color: #555; /* Ensure dark enough */
 }
 
 .step-counter {

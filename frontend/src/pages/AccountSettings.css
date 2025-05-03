@@ -1,0 +1,61 @@
+/* src/pages/AccountSettings.css */
+.account-settings-page {
+    padding: 2rem;
+    max-width: 800px; /* Limit width */
+    margin: 1rem auto; /* Center on page */
+    background-color: #fff; /* White background for the settings area */
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Inherit page header styles or define new ones */
+.account-settings-page .page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.settings-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #eee;
+    padding-left: 1rem; /* Align with content padding */
+}
+
+.tab-button {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-text-light, #6c757d); /* Use theme variable */
+    border-bottom: 3px solid transparent; /* Placeholder for active state */
+    transition: color 0.2s ease, border-bottom-color 0.2s ease;
+    margin-bottom: -2px; /* Overlap border */
+}
+
+.tab-button:hover {
+    color: var(--color-text-dark, #343a40);
+}
+
+.tab-button.active {
+    color: var(--color-primary, #A0D2DB); /* Use theme variable */
+    border-bottom-color: var(--color-primary, #A0D2DB);
+}
+
+.settings-content {
+    padding: 0 1rem; /* Padding for the content area */
+}
+
+/* Add fade-in animation */
+.motion-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

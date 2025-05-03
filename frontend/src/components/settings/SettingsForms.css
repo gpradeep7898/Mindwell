@@ -1,0 +1,169 @@
+/* src/components/settings/SettingsForms.css */
+.settings-form {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    background-color: #fdfdfd;
+}
+
+.settings-form h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--color-text-dark, #333);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid #eee;
+}
+
+.form-description {
+    font-size: 0.9rem;
+    color: var(--color-text-light, #6c757d);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--color-text, #555);
+    font-size: 0.9rem;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Include padding and border in element's total width/height */
+    transition: border-color 0.2s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--color-primary, #A0D2DB);
+    box-shadow: 0 0 0 2px rgba(160, 210, 219, 0.3); /* Focus ring */
+}
+
+ .form-group input:disabled {
+    background-color: #e9ecef;
+    cursor: not-allowed;
+ }
+
+ .form-group small {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--color-text-light, #6c757d);
+    margin-top: 0.3rem;
+ }
+
+.settings-form button[type="submit"],
+.settings-form .button-outline,
+.settings-form .file-actions button {
+    padding: 0.7rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border-radius: 20px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.settings-form button[type="submit"] {
+    background-color: var(--color-primary, #A0D2DB);
+    color: white;
+}
+.settings-form button[type="submit"]:hover {
+    background-color: var(--color-primary-dark, #78aeb5);
+}
+ .settings-form button[type="submit"]:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.button-outline {
+     background-color: transparent;
+     color: var(--color-primary, #A0D2DB);
+     border-color: var(--color-primary, #A0D2DB);
+     margin-right: 1rem; /* Space between buttons */
+}
+.button-outline:hover {
+     background-color: rgba(160, 210, 219, 0.1); /* Light primary bg */
+}
+ .button-outline:disabled {
+    color: #ccc;
+    border-color: #ccc;
+    cursor: not-allowed;
+    background-color: transparent;
+}
+
+/* Messages */
+.error-message {
+    color: #dc3545; /* Red */
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 0.8rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.success-message {
+    color: #155724; /* Dark Green */
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    padding: 0.8rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+
+/* Profile Picture Specific */
+.profile-picture-preview {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1.5rem; /* Space between image and buttons */
+}
+
+.avatar-image {
+    width: 100px; /* Adjust size */
+    height: 100px;
+    border-radius: 50%; /* Circular avatar */
+    object-fit: cover; /* Crop image nicely */
+    border: 3px solid #eee;
+    background-color: #f0f0f0; /* Placeholder bg */
+}
+
+.file-actions {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: var(--color-text, #555);
+}
+ .file-actions span {
+     font-style: italic;
+     max-width: 200px; /* Prevent long filenames breaking layout */
+     overflow: hidden;
+     text-overflow: ellipsis;
+     white-space: nowrap;
+ }
+.file-actions button {
+     /* Use default primary button style */
+     background-color: var(--color-primary, #A0D2DB);
+     color: white;
+}
+ .file-actions button:hover {
+     background-color: var(--color-primary-dark, #78aeb5);
+}

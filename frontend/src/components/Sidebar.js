@@ -11,6 +11,7 @@ import {
     FiMail,           // Anonymous Letters
     FiShield,         // Quick Relief
     FiShoppingCart,   // Wellness Store
+    FiSettings,       // <<< Account Settings icon
     FiLogOut          // Logout icon
 } from "react-icons/fi";
 import { getAuth, signOut } from "firebase/auth";
@@ -29,6 +30,9 @@ const navItems = [
     { path: "/anonymous-letters", icon: <FiMail />, label: "Community Letters" },
     { path: "/find-doctor", icon: <FiMapPin />, label: "Find Support" },
     { path: "/wellness-store", icon: <FiShoppingCart />, label: "Wellness Store" },
+    // --- ADDED Account Settings Link ---
+    { path: "/account-settings", icon: <FiSettings />, label: "Account Settings" },
+    // --- END ---
 ];
 
 // --- Animation variants ---

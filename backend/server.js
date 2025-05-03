@@ -1,5 +1,5 @@
 // backend/server.js
-// Final Corrected Version: GET /anonymous-letters is public, other letter actions & AI chat are protected.
+// Final Corrected Version: Includes storageBucket init, userRoutes mounting, and correct rate limiter placement.
 
 const express = require("express");
 const cors = require("cors");
@@ -12,99 +12,141 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 
 // --- Step 1: Import Middleware & Route Handlers ---
-const authMiddleware = require('./routes/authMiddleware'); // Correct path assuming it's in 'routes'
+console.log("--- DEBUG: Importing middleware & routes ---");
+const authMiddleware = require('./routes/authMiddleware');
 const letterRoutes = require("./routes/anonymousLetters");
 const facilityRoutes = require("./routes/facilities");
-// const chatbotRoutes = require("./routes/chatbot"); // Old route disabled
 const wellnessFeedRoutes = require("./routes/wellnessFeed");
 const aiChatRoutes = require('./routes/aiChatRoutes');
+const userRoutes = require('./routes/userRoutes'); // Import user routes
+console.log("--- DEBUG: Imports complete ---");
+
 // --- End Imports ---
 
 const app = express();
+console.log("--- DEBUG: Express app initialized ---");
 
 // --- Security Enhancements ---
-app.use(helmet());
+app.use(helmet()); // Apply security headers
+console.log("--- DEBUG: Helmet applied ---");
 
 // --- CORS Configuration ---
 const allowedOrigins = process.env.NODE_ENV === 'production'
-    ? (process.env.FRONTEND_URL_PROD ? [process.env.FRONTEND_URL_PROD] : [])
-    : ["http://localhost:3000", "http://localhost:8082", "http://localhost:8003", "http://localhost:8081"];
+    ? (process.env.FRONTEND_URL_PROD ? [process.env.FRONTEND_URL_PROD] : []) // Use configured prod URL
+    : ["http://localhost:3000", "http://localhost:8082", "http://localhost:8003", "http://localhost:8081"]; // Dev origins
 
 const corsOptions = {
     origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests) or from allowed origins
         if (!origin || allowedOrigins.indexOf(origin) !== -1) {
             callback(null, true);
         } else {
             console.warn(`CORS blocked request from origin: ${origin}`);
-            callback(new Error('Not allowed by CORS'));
+            callback(new Error('This origin is not allowed by CORS policy.'));
         }
     },
-    methods: "GET, POST, DELETE, PUT, OPTIONS",
-    allowedHeaders: "Content-Type, Authorization",
-    credentials: true
+    methods: "GET, POST, DELETE, PUT, OPTIONS", // Allowed HTTP methods
+    allowedHeaders: "Content-Type, Authorization", // Allowed headers in requests
+    credentials: true // Allow cookies/authorization headers
 };
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+app.use(cors(corsOptions)); // Apply CORS middleware
+app.options('*', cors(corsOptions)); // Enable pre-flight requests for all routes
+console.log("--- DEBUG: CORS configured ---");
 
 // --- Rate Limiting ---
+// Apply rate limiter generally to all routes starting with /api/
 const apiLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 150,
+    windowMs: 15 * 60 * 1000, // 15 minutes window
+    max: 150, // Max requests per IP per windowMs
     message: { error: "Too many requests from this IP, please try again after 15 minutes." },
-    standardHeaders: true,
-    legacyHeaders: false,
+    standardHeaders: true, // Send standard RateLimit-* headers
+    legacyHeaders: false, // Disable old X-RateLimit-* headers
 });
-app.use('/api/', apiLimiter);
+app.use('/api/', apiLimiter); // Apply limiter to all /api/ routes
+console.log("--- DEBUG: Rate limiter applied to /api/ ---");
 
 // --- Body Parsers ---
+// Parse JSON bodies (limit size for security)
 app.use(express.json({ limit: '20kb' }));
+// Parse URL-encoded bodies (limit size)
 app.use(express.urlencoded({ extended: true, limit: '20kb' }));
+console.log("--- DEBUG: Body parsers applied ---");
 
 // --- Request Logging Middleware ---
+// Logs basic info for every incoming request
 app.use((req, res, next) => {
     const startTime = Date.now();
+    // Log details when the response finishes
     res.on('finish', () => {
         const duration = Date.now() - startTime;
         console.log(`REQ: ${req.method} ${req.originalUrl} - STATUS ${res.statusCode} [${duration}ms]`);
     });
-    next();
+    next(); // Pass control to the next middleware
 });
+console.log("--- DEBUG: Request logger applied ---");
+
 
 // --- Firebase Admin Initialization ---
+console.log("--- DEBUG: Initializing Firebase Admin SDK ---");
 try {
     let serviceAccount;
     const serviceAccountEnvVar = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
-    const serviceAccountPath = path.join(__dirname, "firebaseServiceAccount.json");
+    const serviceAccountPath = path.join(__dirname, "firebaseServiceAccount.json"); // Assumes file is in backend root
 
     if (serviceAccountEnvVar) {
-        console.log("Init Firebase Admin SDK from Environment Variable...");
-        try { serviceAccount = JSON.parse(serviceAccountEnvVar); } catch (e) { console.error("ERROR: Failed to parse FIREBASE_SERVICE_ACCOUNT_JSON."); throw e; }
+        console.log("--- DEBUG: Init Firebase Admin SDK from Environment Variable...");
+        try {
+             serviceAccount = JSON.parse(serviceAccountEnvVar);
+        } catch (e) {
+            console.error("ERROR: Failed to parse FIREBASE_SERVICE_ACCOUNT_JSON environment variable.");
+            throw e; // Re-throw parsing error
+        }
     } else if (fs.existsSync(serviceAccountPath)) {
-        console.log("Init Firebase Admin SDK from local file (firebaseServiceAccount.json)...");
+        console.log("--- DEBUG: Init Firebase Admin SDK from local file (firebaseServiceAccount.json)...");
         serviceAccount = require(serviceAccountPath);
-    } else { throw new Error("Firebase Admin SDK credentials not found."); }
+    } else {
+        // Critical error if no credentials found
+        throw new Error("Firebase Admin SDK credentials not found. Set FIREBASE_SERVICE_ACCOUNT_JSON env var or place firebaseServiceAccount.json in backend root.");
+    }
 
-    admin.initializeApp({ credential: admin.credential.cert(serviceAccount), });
-    console.log("✅ Firebase Admin SDK Initialized Successfully.");
+    // --- >>> CORRECTED INITIALIZATION <<< ---
+    // Initialize Firebase Admin App with credentials AND storage bucket
+    admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        // !!! IMPORTANT: REPLACE with your actual Firebase Storage bucket name !!!
+        // Find it in Firebase Console -> Storage -> Files tab (it looks like your-project-id.appspot.com)
+        storageBucket: "gs://mindwell-305ae.firebasestorage.app" // <<< ADD THIS LINE AND REPLACE VALUE
+    });
+    // --- >>> END CORRECTION <<< ---
+
+    console.log("✅ Firebase Admin SDK Initialized Successfully (including Storage Bucket config)."); // Updated log
+
 } catch (error) {
+    // Log critical initialization error and exit the process
     console.error("❌ CRITICAL ERROR: Firebase Admin SDK Initialization Failed:", error.message || error);
-    process.exit(1);
+    process.exit(1); // Exit with failure code
 }
 
 
 // --- Step 2: Mount ALL API Routes ---
+console.log("--- DEBUG: Mounting API Routes ---");
 
 // Public routes (do NOT apply authMiddleware here globally)
+console.log("--- DEBUG: Mounting /api/facilities ---");
 app.use("/api/facilities", facilityRoutes);
+console.log("--- DEBUG: Mounting /api/wellness-feed ---");
 app.use("/api/wellness-feed", wellnessFeedRoutes);
-app.use("/api/anonymous-letters", letterRoutes); // *** REMOVED authMiddleware - GET is now public ***
-                                                 // Individual POST/DELETE within letterRoutes apply their own authMiddleware
+console.log("--- DEBUG: Mounting /api/anonymous-letters ---");
+app.use("/api/anonymous-letters", letterRoutes);
 
-// Protected routes (apply authMiddleware here)
-app.use("/api/ai-chat", authMiddleware, aiChatRoutes); // AI Chat requires login
+// Protected routes (Apply authMiddleware before the route handler)
+console.log("--- DEBUG: Mounting /api/ai-chat ---");
+app.use("/api/ai-chat", authMiddleware, aiChatRoutes);
 
-// Add other routes as needed, applying authMiddleware individually if protection is required
-// Example: app.use("/api/mood-entries", authMiddleware, moodRoutes);
+// USER ROUTES MOUNTING
+console.log("--- DEBUG: Attempting to mount /api/user ---");
+app.use('/api/user', authMiddleware, userRoutes); // Apply auth middleware here
+console.log("--- DEBUG: Successfully mounted /api/user ---");
 
 // --- End API Routes ---
 
@@ -113,30 +155,53 @@ app.get("/", (req, res) => { res.status(200).json({ message: "Welcome to the Min
 
 // --- Health Check Route ---
 app.get("/healthz", (req, res) => { res.status(200).send("OK"); });
+console.log("--- DEBUG: Root and Health routes mounted ---");
 
 // --- Step 3: Centralized Error Handling ---
-// 404 Handler (requests falling through)
-app.use((req, res, next) => { res.status(404).json({ error: `Resource Not Found: ${req.method} ${req.originalUrl}` }); });
+// 404 Handler (Catch-all for routes not matched above)
+console.log("--- DEBUG: Mounting 404 handler ---");
+app.use((req, res, next) => {
+    console.log(`--- DEBUG: 404 triggered for ${req.method} ${req.originalUrl} ---`); // Log which request hit 404
+    res.status(404).json({ error: `Resource Not Found: ${req.method} ${req.originalUrl}` });
+});
 
-// Global Error Handler (catches next(err))
+// Global Error Handler (Catches errors passed via next(err))
+console.log("--- DEBUG: Mounting global error handler ---");
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
     console.error("💥 UNHANDLED ERROR DETECTED:", err.stack || err);
-    const statusCode = typeof err.statusCode === 'number' ? err.statusCode : 500;
-    const message = (process.env.NODE_ENV !== 'production' || err.expose === true) ? err.message : "An unexpected internal server error occurred.";
-    res.status(statusCode).json({ error: message, ...(process.env.NODE_ENV === 'development' && { stack: err.stack }), });
+    const statusCode = typeof err.statusCode === 'number' && err.statusCode >= 400 && err.statusCode < 600
+        ? err.statusCode
+        : 500;
+    const message = (process.env.NODE_ENV !== 'production' || err.expose === true)
+         ? err.message
+         : "An unexpected internal server error occurred.";
+
+    res.status(statusCode).json({
+        error: message,
+        ...(process.env.NODE_ENV === 'development' && { stack_trace: err.stack }),
+    });
 });
 // --- End Error Handling ---
 
 // --- Start the Server ---
-const PORT = process.env.PORT || 8081;
+const PORT = process.env.PORT || 8081; // Ensure this is the port your frontend targets (8081)
 app.listen(PORT, () => {
     console.log(`\n🚀 MindWell Server listening on port ${PORT}`);
     console.log(`      Mode: ${process.env.NODE_ENV || 'development'}`);
-    if(Array.isArray(allowedOrigins) && allowedOrigins.length > 0) console.log(`      Allowed CORS origins: ${allowedOrigins.join(', ')}`);
-    else if (process.env.NODE_ENV === 'production' && !process.env.FRONTEND_URL_PROD) console.warn('      WARNING: Running in production mode, but FRONTEND_URL_PROD is not set in .env!');
-    else console.log('      Allowed CORS origins: * (or none specified for production)');
+    if(Array.isArray(allowedOrigins) && allowedOrigins.length > 0) {
+        console.log(`      Allowed CORS origins: ${allowedOrigins.join(', ')}`);
+    } else if (process.env.NODE_ENV === 'production' && !process.env.FRONTEND_URL_PROD) {
+        console.warn('      WARNING: Running in production mode, but FRONTEND_URL_PROD is not set in .env! CORS might block frontend.');
+    } else if (process.env.NODE_ENV !== 'production') {
+         console.log(`      Allowed CORS origins: Dev list specified`);
+    } else {
+         console.log('      Allowed CORS origins: None specified in production!');
+    }
     console.log(`      News API Key Loaded: ${process.env.NEWS_API_KEY ? 'Yes' : 'NO!'}`);
     console.log(`      Google AI API Key Loaded: ${process.env.GOOGLE_API_KEY ? 'Yes' : 'NO!'}`);
-    console.log(`      Firebase Credentials Source: ${process.env.FIREBASE_SERVICE_ACCOUNT_JSON ? 'ENV Var' : (fs.existsSync(path.join(__dirname, "firebaseServiceAccount.json")) ? 'File' : 'NOT FOUND')}`);
+    const firebaseCredSource = process.env.FIREBASE_SERVICE_ACCOUNT_JSON ? 'ENV Var' : (fs.existsSync(path.join(__dirname, "firebaseServiceAccount.json")) ? 'File' : 'NOT FOUND');
+    console.log(`      Firebase Credentials Source: ${firebaseCredSource}`);
+    if (firebaseCredSource === 'NOT FOUND') console.error('      ERROR: Firebase credentials could not be located!');
+    console.log("--- DEBUG: Server startup sequence complete ---");
 });

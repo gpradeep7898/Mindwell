@@ -1,5 +1,5 @@
- // frontend/src/components/QuickReliefOverlay.js
-// Updated Version: Fixes rendering error and implements auto-advancing steps
+// frontend/src/components/QuickReliefOverlay.js
+// Corrected Version: Uses backgroundImage prop for styling
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,154 +8,66 @@ import './QuickReliefOverlay.css'; // Ensure this CSS file exists and is styled
 
 // Main Overlay Component
 const QuickReliefOverlay = ({ isVisible, onClose, protocol }) => {
+    // --- State Hooks (Keep as is) ---
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
-    const [isPlaying, setIsPlaying] = useState(false); // Audio playing state
+    const [isPlaying, setIsPlaying] = useState(false);
     const [isMuted, setIsMuted] = useState(false);
     const [showCompletion, setShowCompletion] = useState(false);
-    const audioRef = useRef(null); // Holds the <audio> element instance
-    const stepTimeoutRef = useRef(null); // Holds the timeout ID for step advancement
-    const closeTimeoutRef = useRef(null); // Holds the timeout ID for auto-closing
+    const audioRef = useRef(null);
+    const stepTimeoutRef = useRef(null);
+    const closeTimeoutRef = useRef(null);
 
-    // --- Safe Audio Playback ---
+    // --- Callback Hooks (Keep as is) ---
     const safePlayAudio = useCallback(() => {
-        if (audioRef.current && audioRef.current.paused) { // Only play if paused
+        if (audioRef.current && audioRef.current.paused) {
             audioRef.current.play().then(() => {
                 setIsPlaying(true);
             }).catch(error => {
                 console.warn("Audio auto-play prevented:", error);
-                setIsPlaying(false); // Reflect that it didn't play
+                setIsPlaying(false);
             });
         } else if (audioRef.current && !audioRef.current.paused) {
-             setIsPlaying(true); // Already playing
+             setIsPlaying(true);
         }
     }, []);
 
-    // --- Step Navigation & Completion Logic ---
     const handleNextStep = useCallback(() => {
-        // Clear any existing step timeout *before* moving to the next step
         clearTimeout(stepTimeoutRef.current);
-
         if (protocol && currentStepIndex < protocol.steps.length - 1) {
             setCurrentStepIndex(prevIndex => prevIndex + 1);
         } else if (protocol && currentStepIndex >= protocol.steps.length - 1) {
-            // Last step reached
             setShowCompletion(true);
             if (audioRef.current) {
-                 audioRef.current.pause(); // Pause music on completion
+                 audioRef.current.pause();
                  setIsPlaying(false);
             }
-            // Auto-close after a delay
             closeTimeoutRef.current = setTimeout(() => {
-                handleClose(); // Use handleClose to ensure proper cleanup
-            }, 3500); // Adjust delay as needed (e.g., 3.5 seconds)
+                handleClose();
+            }, 3500);
         }
-    }, [protocol, currentStepIndex]); // Removed onClose from deps, call handleClose instead
+    // Add handleClose dependency if its logic ever needs currentStepIndex/protocol
+    }, [protocol, currentStepIndex]);
 
-     // --- Close Handling (ensures cleanup) ---
      const handleClose = useCallback(() => {
-        clearTimeout(stepTimeoutRef.current); // Clear step timer
-        clearTimeout(closeTimeoutRef.current); // Clear auto-close timer
+        clearTimeout(stepTimeoutRef.current);
+        clearTimeout(closeTimeoutRef.current);
         if (audioRef.current) {
-            audioRef.current.pause(); // Ensure audio stops
+            audioRef.current.pause();
         }
         setIsPlaying(false);
-        setShowCompletion(false); // Reset completion state
-        setCurrentStepIndex(0); // Reset step index
-        // Reset other states if needed before calling parent onClose
-        onClose(); // Call the passed-in onClose function
+        setShowCompletion(false);
+        setCurrentStepIndex(0);
+        onClose();
     }, [onClose]);
 
-
-    // --- Effect for Audio Setup & Initial State Reset ---
-    useEffect(() => {
-        // Reset states when the overlay becomes visible with a new protocol
-        if (isVisible && protocol) {
-            setCurrentStepIndex(0);
-            setShowCompletion(false);
-            clearTimeout(closeTimeoutRef.current); // Clear any lingering close timeout
-
-            // Audio Setup
-            if (protocol.musicFile) {
-                if (!audioRef.current || audioRef.current.src !== protocol.musicFile) {
-                     if (audioRef.current) audioRef.current.pause(); // Stop previous
-                    audioRef.current = new Audio(protocol.musicFile);
-                    audioRef.current.loop = true;
-                    audioRef.current.muted = isMuted;
-                    audioRef.current.volume = 0.6; // Adjust default volume
-                }
-                safePlayAudio(); // Attempt to play new/existing audio
-            } else {
-                // No music for this protocol, ensure cleanup
-                if (audioRef.current) {
-                    audioRef.current.pause();
-                    audioRef.current = null; // Remove audio element if none needed
-                }
-                setIsPlaying(false);
-            }
-        } else if (!isVisible) {
-             // Cleanup when overlay hides
-             if (audioRef.current) {
-                 audioRef.current.pause();
-             }
-             setIsPlaying(false); // Ensure state is false when hidden
-             clearTimeout(stepTimeoutRef.current);
-             clearTimeout(closeTimeoutRef.current);
-        }
-
-        // Cleanup function for when the component unmounts completely
-        return () => {
-            if (audioRef.current) {
-                audioRef.current.pause();
-                // Optionally nullify audioRef here if needed for garbage collection,
-                // but pausing might be sufficient.
-                // audioRef.current = null;
-            }
-            clearTimeout(stepTimeoutRef.current);
-            clearTimeout(closeTimeoutRef.current);
-        };
-    }, [isVisible, protocol, isMuted, safePlayAudio]); // Rerun when these change
-
-    // --- Effect for Auto-Advancing Steps ---
-    useEffect(() => {
-        // Clear previous timeout if effect re-runs before timeout completes
-        clearTimeout(stepTimeoutRef.current);
-
-        // Conditions to run the timer: visible, protocol exists, not completed yet
-        if (isVisible && protocol && !showCompletion) {
-            const currentStep = protocol.steps?.[currentStepIndex];
-            const duration = currentStep?.duration;
-
-            // Only set timeout if duration is valid (positive number)
-            if (typeof duration === 'number' && duration > 0) {
-                stepTimeoutRef.current = setTimeout(() => {
-                    handleNextStep(); // Advance to next step or completion
-                }, duration);
-            } else {
-                // Handle steps with no duration or invalid duration?
-                // Maybe log a warning or require manual advance for those?
-                // For now, it just won't auto-advance.
-                console.warn(`Step ${currentStepIndex} has invalid or zero duration.`);
-            }
-        }
-
-        // Cleanup: Clear timeout if dependencies change or component unmounts
-        return () => {
-            clearTimeout(stepTimeoutRef.current);
-        };
-    // This effect depends on the current step, protocol, visibility, and completion state
-    }, [currentStepIndex, protocol, isVisible, showCompletion, handleNextStep]);
-
-
-    // --- Audio Controls ---
     const togglePlayPause = useCallback(() => {
         if (!audioRef.current) return;
         if (isPlaying) {
             audioRef.current.pause();
             setIsPlaying(false);
         } else {
-            safePlayAudio(); // Use safe play which updates state on success/fail
+            safePlayAudio();
         }
-        // We no longer pause the step timer when music pauses, let exercise continue.
     }, [isPlaying, safePlayAudio]);
 
     const toggleMute = useCallback(() => {
@@ -167,15 +79,78 @@ const QuickReliefOverlay = ({ isVisible, onClose, protocol }) => {
     }, [isMuted]);
 
 
+    // --- Effect Hooks (Keep as is) ---
+    useEffect(() => {
+        if (isVisible && protocol) {
+            setCurrentStepIndex(0);
+            setShowCompletion(false);
+            clearTimeout(closeTimeoutRef.current);
+            if (protocol.musicFile) {
+                if (!audioRef.current || !audioRef.current.src.endsWith(protocol.musicFile)) {
+                     if (audioRef.current) audioRef.current.pause();
+                    audioRef.current = new Audio(protocol.musicFile);
+                    audioRef.current.loop = true;
+                    audioRef.current.muted = isMuted;
+                    audioRef.current.volume = 0.6;
+                }
+                safePlayAudio();
+            } else {
+                if (audioRef.current) {
+                    audioRef.current.pause();
+                    audioRef.current = null;
+                }
+                setIsPlaying(false);
+            }
+        } else if (!isVisible) {
+             if (audioRef.current) {
+                 audioRef.current.pause();
+             }
+             setIsPlaying(false);
+             clearTimeout(stepTimeoutRef.current);
+             clearTimeout(closeTimeoutRef.current);
+        }
+        return () => {
+             if (audioRef.current) {
+                audioRef.current.pause();
+             }
+            clearTimeout(stepTimeoutRef.current);
+            clearTimeout(closeTimeoutRef.current);
+        };
+    }, [isVisible, protocol, isMuted, safePlayAudio, handleClose]); // Added handleClose
+
+    useEffect(() => {
+        clearTimeout(stepTimeoutRef.current);
+        if (isVisible && protocol && !showCompletion) {
+            const currentStep = protocol.steps?.[currentStepIndex];
+            const duration = currentStep?.duration;
+            if (typeof duration === 'number' && duration > 0) {
+                stepTimeoutRef.current = setTimeout(() => {
+                    handleNextStep();
+                }, duration);
+            } else {
+                console.warn(`Step ${currentStepIndex} has invalid or zero duration.`);
+            }
+        }
+        return () => {
+            clearTimeout(stepTimeoutRef.current);
+        };
+    }, [currentStepIndex, protocol, isVisible, showCompletion, handleNextStep]);
+
+
     // --- Dynamic Styling & Content ---
+    // <<< THIS IS THE CORRECTED CODE >>>
     const overlayStyle = {
-        background: protocol?.themeGradient || 'linear-gradient(to bottom, #f0f4f8, #ffffff)',
+        // Set background image dynamically using the path passed in the protocol object
+        backgroundImage: protocol?.backgroundImage ? `url(${protocol.backgroundImage})` : 'none', // Use image path or fallback
+        // You could add a semi-transparent gradient OVER the image like this:
+        // backgroundImage: `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url(${protocol?.backgroundImage})`,
     };
-    // Safely get current step text
-    const currentStepText = protocol?.steps?.[currentStepIndex]?.text ?? ''; // Use nullish coalescing
+    // <<< END CORRECTED CODE >>>
+
+    const currentStepText = protocol?.steps?.[currentStepIndex]?.text ?? '';
 
 
-    // --- Framer Motion Variants --- (Keep your existing variants)
+    // --- Framer Motion Variants (Keep as is) ---
     const overlayVariants = {
         hidden: { opacity: 0, scale: 1.05 },
         visible: { opacity: 1, scale: 1, transition: { duration: 0.4, ease: "easeOut" } },
@@ -194,8 +169,8 @@ const QuickReliefOverlay = ({ isVisible, onClose, protocol }) => {
         <AnimatePresence>
             {isVisible && protocol && (
                 <motion.div
-                    className="quick-relief-overlay"
-                    style={overlayStyle}
+                    className="quick-relief-overlay" // CSS class defines size/position/repeat etc.
+                    style={overlayStyle}              // Inline style applies the specific image URL
                     variants={overlayVariants} initial="hidden" animate="visible" exit="exit"
                     aria-modal="true" role="dialog" aria-labelledby="quick-relief-title"
                 >
@@ -204,9 +179,10 @@ const QuickReliefOverlay = ({ isVisible, onClose, protocol }) => {
                         <FiX size={24} />
                     </button>
 
+                    {/* Content Box (Has its own background in CSS) */}
                     <motion.div className="overlay-content" variants={contentVariants}>
 
-                        {/* --- Completion Message View --- */}
+                        {/* --- Completion Message View (Keep as is) --- */}
                         {showCompletion ? (
                              <motion.div
                                 className="completion-message-container"
@@ -216,14 +192,12 @@ const QuickReliefOverlay = ({ isVisible, onClose, protocol }) => {
                                 <p>{protocol.completionMessage || "Exercise Complete!"}</p>
                             </motion.div>
                         ) : (
-                        /* --- Active Exercise View --- */
+                        /* --- Active Exercise View (Keep as is) --- */
                         <>
                             <h2 id="quick-relief-title" className="overlay-title">{protocol.name}</h2>
-
-                            {/* CORRECTED: Displaying step TEXT */}
                             <div className="steps-container">
                                 <motion.p
-                                    key={currentStepIndex} // Add key to force re-render animation on step change
+                                    key={currentStepIndex}
                                     className="step-instruction"
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
@@ -235,10 +209,6 @@ const QuickReliefOverlay = ({ isVisible, onClose, protocol }) => {
                                     Step {currentStepIndex + 1} of {protocol.steps.length}
                                 </span>
                             </div>
-
-                            {/* No longer need separate timer component or Next button */}
-
-                            {/* Audio Controls */}
                             {protocol.musicFile && (
                                 <div className="audio-controls">
                                     <button onClick={togglePlayPause} aria-label={isPlaying ? "Pause music" : "Play music"}>

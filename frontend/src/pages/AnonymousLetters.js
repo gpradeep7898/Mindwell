@@ -388,7 +388,7 @@ const AnonymousLetters = () => {
                     layout
                 >
                     <textarea
-                        placeholder="Share your thoughts, feelings, or experiences here anonymously..."
+                        placeholder="Share your thoughts, feelings, or experiences here..."
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         rows={4}
